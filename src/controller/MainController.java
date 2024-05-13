@@ -335,9 +335,9 @@ public class MainController extends Print {
 	
 	
 	private View home() {
-		System.out.println("==========홈==========");
+		if (debug) System.out.println("==========홈==========");
 		
-		System.out.println("1. 관리자");
+		System.out.println("1. 집 매물 정보 보기");
 		System.out.println("2. 일반 회원");
 		System.out.println("3. 회원가입");
 		
