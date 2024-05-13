@@ -2,23 +2,28 @@ package controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import service.AdminService;
+import service.EstateService;
 import service.MemberService;
-import service.ProdService;
+import service.NoticeService;
 import util.ScanUtil;
 import util.View;
 import view.Print;
- 
+
 public class MainController extends Print {
-	
+
 	static public Map<String, Object> sessionStorage = new HashMap<>();
-	
+
+	AdminService adminService = AdminService.getInstance();
 	MemberService memberService = MemberService.getInstance();
-	ProdService prodService = ProdService.getInstance();
-	
+	NoticeService noticeService = NoticeService.getInstance();
+	EstateService estateService = EstateService.getInstance();
+
 	boolean debug = true;
 
 	public static void main(String[] args) {
@@ -32,322 +37,328 @@ public class MainController extends Print {
 			case HOME:
 				view = home();
 				break;
-			case LOGIN:
-				view = login();
+			case ADMINLOGIN:
+				view = adminLogin();
 				break;
-			case SIGN:
-				view = sign();
+			case MEMBERLOGIN:
+				view = memberLogin();
 				break;
 			case ADMIN:
 				view = admin();
 				break;
-			case ADMIN_PROD_LIST:
-				view = adminProdList();
-				break;
-			case ADMIN_PROD_ALL_LIST:
-				view = adminProdAllList();
-				break;
-			case ADMIN_PROD_MANAGE:
-				view = adminProdManage();
-				break;
 			case MEMBER:
 				view = member();
+				break;
+			case NOTICE_LIST:
+				view = noticeList();
 				break;
 			case MYINFO:
 				view = myInfo();
 				break;
-			case PROD_LIST:
-				view = prodList();
+			case ADMIN_NOTICE:
+				view = adminNotice();
 				break;
-			case PROD_DETAIL:
-				view = prodDetail();
+//			case ADMIN_REPORT:
+//				view = adminReport();
+//				break;
+//			case ADMIN_TICKET:
+//				view = adminTicket();
+//				break;
+//			case MEMBER_UPDATE:
+//				view = memberUpdate();
+//				break;
+//			case MEMBER_DELETE:
+//				view = memberDelete();
+//				break;
+//			case MEMBER_MYESTLIST:
+//				view = memberMyEstList();
+//				break;
+//			case MEMBER_REVIEW:
+//				view = memberReview();
+//				break;
+//			case MEMBER_MYSALELIST:
+//				view = memberMySaleList();
+//				break;
+//			case MEMBER_WISHLIST:
+//				view = memberWishList();
+//				break;
+//			case MEMBER_REPORT:
+//				view = memberReport();
+//				break;
+			case EST_LIST:
+				view = estList();
 				break;
-			case PROD_INSERT:
-				view = prodInsert();
-				break;
-			case PROD_UPDATE:
-				view = prodUpdate();
-				break;
-			case PROD_DELETE:
-				view = prodDelete();
+			case EST_ADD:
+				view = estAdd();
 				break;
 			default:
 				break;
 			}
 		}
 	}
-	
-	
-	private View prodDelete() {
-		adminProdList();
-		
-		List<Object> param = new ArrayList<Object>();
-		
-		int prodNo = ScanUtil.nextInt("번호 선택 : ");
-		param.add(prodNo);
-		
-		int result = prodService.prodDelete(param);
-		
-		if(result == 0) {
-			System.out.println("존재하지 않는 상품 번호입니다.");
-		} else if(result != 0) {
-			System.out.println("상품 삭제를 성공했습니다.");
-		}
-		
-		return View.ADMIN_PROD_ALL_LIST;
-	}
 
 	
-	private View prodUpdate() {
-		adminProdList();
-		
-		int prodNo = ScanUtil.nextInt("상품 번호 : ");
-		String name = ScanUtil.nextLine("상품명 : ");
-		String type = ScanUtil.nextLine("타입 : ");
-		int price = ScanUtil.nextInt("가격 : ");
-		
-		List<Object> param = new ArrayList<Object>();
-		
-		param.add(name);
-		param.add(type);
-		param.add(price);
-		param.add(prodNo);
-		
-		prodService.prodUpdate(param);
-		
-		return View.ADMIN_PROD_ALL_LIST;
-	}
-	
 
-	private View prodInsert() {
-		adminProdList();
-		
-		List<Object> param = new ArrayList<Object>();
-		
-		String name = ScanUtil.nextLine("상품명 : ");
-		String type = ScanUtil.nextLine("상품 타입 : ");
-		String price = ScanUtil.nextLine("가격 : ");
-		
-		param.add(name);
-		param.add(type);
-		param.add(price);
-		
-		prodService.prodInsert(param);
-		
-		return View.ADMIN_PROD_ALL_LIST;
-	}
-	
 
-	private View prodDetail() {
-		if (debug) System.out.println("상품 상세 보기");
-		
-		System.out.println("1. 상품 삭제");
-		System.out.println("2. 상품 정보 변경");
-		System.out.println("3. 상품 리스트");
-		
-		int sel = ScanUtil.menu();
-		
-		if (sel==1) return View.PROD_DELETE;
-		else if (sel==2) return View.PROD_UPDATE;
-		else if (sel==3) return View.ADMIN_PROD_LIST;
-		return View.ADMIN;
-	}
-
-	
-	private View adminProdManage() {
-		if (debug) System.out.println("상품 관리 게시판");
-		
-		System.out.println("1. 상품 전체 리스트");
-		System.out.println("2. 상품 추가");
-		
-		int sel = ScanUtil.menu();
-		
-		if (sel==1) return View.ADMIN_PROD_ALL_LIST;
-		else if (sel==2) return View.PROD_INSERT;
-		return View.ADMIN;
-	}
-	
-
-	private View adminProdAllList() {
-		if (debug) System.out.println("상품 전체 리스트");
-		
-		System.out.println("1. 상품 상세 보기");
-		System.out.println("2. 상품 관리 게시판");
-		
-		int sel = ScanUtil.menu();
-		
-		if (sel==1) return View.PROD_DETAIL;
-		else if (sel==2) return View.ADMIN_PROD_MANAGE;
-		return View.ADMIN;
-	}
-
-	
-	private View adminProdList() {
-		if (debug) System.out.println("===상품 상세보기");
-		
-		List<Map<String, Object>> param = prodService.adminProdList();
+	private View noticeList() {
+		System.out.println();
+		List<Map<String, Object>> param = noticeService.noticeList();
 				
-		for(Map<String, Object> map : param) {
-		BigDecimal prodNo = (BigDecimal) map.get("NO");
-		String name = (String) map.get("NAME");
-		String type = (String) map.get("TYPE");
-		BigDecimal price = (BigDecimal) map.get("PRICE");
-		String delyn = (String) map.get("DELYN");
-		System.out.println(prodNo+"\t"+name+"\t"+type+"\t"+price+"\t"+delyn);
-		}
-		
-		int role = (int) sessionStorage.get("role");
-		
-		if(role == 1) return View.MEMBER;
-		else if(role == 2) return View.ADMIN;
+		for (Map<String, Object> map : param) {
+			String date = (String)map.get("NTC_DATE");
+			String title = (String)map.get("NTC_TITLE");
+			String content = (String)map.get("NTC_CONTENT");
+			System.out.println("[등록일] "+date+"   "+title+"    \t [내용] "+content);
+		}	
+		System.out.println();
 		return View.HOME;
 	}
 	
 	
-	private View prodList() {
-		if (debug) System.out.println("상품 상세보기");
+	private View adminNotice() {
+		if (debug) System.out.println("=========공지사항 관리=========");
+		System.out.println();
+
+		noticeList();
 		
-		List<Map<String, Object>> param = prodService.prodList();
-				
-		for(Map<String, Object> map : param) {
-		BigDecimal prodNo = (BigDecimal) map.get("NO");
-		String name = (String) map.get("NAME");
-		String type = (String) map.get("TYPE");
-		BigDecimal price = (BigDecimal) map.get("PRICE");
-		System.out.println(prodNo+"\t"+name+"\t"+type+"\t"+price);
+		System.out.println("1. 공지사항 작성");
+		System.out.println("2. 공지사항 수정");
+		System.out.println("3. 공지사항 삭제");
+		
+		System.out.println();
+		return null;
+	}
+
+	
+	private View estAdd() {
+		if(!sessionStorage.containsKey("member")) {
+			System.out.println("로그인한 회원만 사용가능한 메뉴입니다.");
+			return View.MEMBERLOGIN;
 		}
 		
-		int role = (int) sessionStorage.get("role");
 		
-		if(role == 1) return View.MEMBER;
-		else if(role == 2) return View.ADMIN;
+		
 		return View.HOME;
 	}
 
 	
 	private View myInfo() {
-		if (debug) System.out.println("내 정보 보기");
+		if (debug) System.out.println("=========내 정보 보기=========");
+		System.out.println();
 		
 		Map<String, Object> myInfo = (Map<String, Object>) sessionStorage.get("member");
 		
-		System.out.println("이름 : "+myInfo.get("ID")+"\t 비밀번호 : "+myInfo.get("PASS")+"\t 이름 : "+myInfo.get("NAME"));
+		String id = (String)myInfo.get("MEM_ID");
+		String pw = (String)myInfo.get("MEM_PW");
+		String name = (String)myInfo.get("MEM_NAME");
+		String tel = (String)myInfo.get("MEM_TEL");
+		String address = (String)myInfo.get("MEM_ADDRESS");
+		String nicName = (String)myInfo.get("MEM_NICKNAME");
+		BigDecimal bank = (BigDecimal)myInfo.get("MEM_BANK");
+		String tier = (String)myInfo.get("TIC_TIER");
+		BigDecimal rptCnt = (BigDecimal)myInfo.get("MEM_RPTCNT");
+		
+		System.out.println("ID : "+id+"\t PW : "+pw+"\t 이름 : "+name+"\t 주소 : "+address);
+		System.out.println("전화번호 : "+tel+"\t 닉네임 : "+nicName+"\t 현재 잔액 : "+bank+"\t 보유 이용권 : "+tier+"\t나의 경고 횟수 : "+rptCnt);
+		System.out.println();
 		
 		return View.MEMBER;
 	}
-
 	
-	private View sign() {
-		if (debug) System.out.println("회원가입");
-		
-		List<Object> param = new ArrayList<Object>();
-		String id = ScanUtil.nextLine("ID : ");
-		String pw = ScanUtil.nextLine("PW : ");
-		String name = ScanUtil.nextLine("이름 : ");
-		param.add(id);
-		param.add(pw);
-		param.add(name);
-		
-		memberService.sign(param);
-		
-		System.out.println("회원가입에 성공하였습니다.");
-		
+	
+	private View estList() {
+		if (debug) System.out.println("=========집 매물 정보 보기=========");
+		System.out.println();
+
+		List<Map<String, Object>> param = estateService.estList();
+
+		int cnt = 1;
+		for (Map<String, Object> map : param) {
+			BigDecimal estNo = (BigDecimal) map.get("EST_NO");
+			String estName = (String) map.get("EST_NAME");
+			String estAdd = (String) map.get("EST_ADDRESS");
+			BigDecimal estFloor = (BigDecimal) map.get("EST_FLOOR");
+			BigDecimal estSupArea = (BigDecimal) map.get("EST_SUPAREA");
+			BigDecimal estExcArea = (BigDecimal) map.get("EST_EXCAREA");
+			BigDecimal estPrice = (BigDecimal) map.get("EST_PRICE");
+			BigDecimal estFee = (BigDecimal) map.get("EST_FEE");
+			BigDecimal estDeptsit = (BigDecimal) map.get("EST_DEPOSIT");
+			String estDate = (String) map.get("EST_DATE");
+
+			String estType = "";
+			int estTypeValue = ((BigDecimal) map.get("EST_TRANTYPE")).intValue();
+			if (estTypeValue == 1) {
+				estType = "단독주택";
+			} else if (estTypeValue == 2) {
+				estType = "아파트";
+			} else if (estTypeValue == 3) {
+				estType = "오피스텔";
+			} else if (estTypeValue == 4) {
+				estType = "빌라";
+			} else if (estTypeValue == 5) {
+				estType = "원룸";
+			}
+
+			String estTranType = "";
+			int estTrantypeValue = ((BigDecimal) map.get("EST_TRANTYPE")).intValue();
+			if (estTrantypeValue == 1) {
+				estTranType = "매매";
+			} else if (estTrantypeValue == 2) {
+				estTranType = "전세";
+			} else if (estTrantypeValue == 3) {
+				estTranType = "월세";
+			}
+
+			String estState = "";
+			int estStateValue = ((BigDecimal) map.get("EST_STATE")).intValue();
+			if (estStateValue == 1) {
+				estState = "판매중";
+			} else if (estStateValue == 2) {
+				estState = "예약중";
+			}
+
+			System.out.println("No." + estNo + "\t[등록일] " + estDate + "\t[" + estType + "]\t[" + estTranType
+					+ "]\t[매물명] " + estName + "\t\t" + estFloor + "층" + "\t[주소] " + estAdd);
+			System.out.println("\t[매물상태] " + estState + "\t" + "\t[공급면적] " + estSupArea + "m2\t[전용면적] " + estExcArea
+					+ "m2\t[관리비] " + estFee + "원" + "\t[금액] " + estPrice + "원 " + "\t\t [보증금] " + estDeptsit + "원");
+			System.out.println();
+		}
+		System.out.println();
+
 		return View.HOME;
 	}
 
 	
-	private View login() {
+	private View member() {
+		if (debug) System.out.println("=========일반회원 페이지=========");
+		System.out.println();
+
+		System.out.println("1. 회원 정보 보기\t2. 회원 정보 변경\t3. 회원 탈퇴\t4. 내 매물 정보\t5. 리뷰 관리");
+		System.out.println("6. 거래 목록\t7. 찜 목록\t8. 신고\t9. 홈\t10. 로그아웃");
+		System.out.println();
 		
-		String id = ScanUtil.nextLine("ID >> ");
-		String pw = ScanUtil.nextLine("PASS >> ");
+		int sel = ScanUtil.menu();
+
+		if (sel == 1) return View.MYINFO;
+		else if (sel == 2) return View.MEMBER_UPDATE;
+		else if (sel == 3) return View.MEMBER_DELETE;
+		else if (sel == 4) return View.MEMBER_MYESTLIST;
+		else if (sel == 5) return View.MEMBER_REVIEW;
+		else if (sel == 6) return View.MEMBER_MYSALELIST;
+		else if (sel == 7) return View.MEMBER_WISHLIST;
+		else if (sel == 8) return View.MEMBER_REPORT;
+		else if (sel == 9) return View.HOME;
+		else if (sel == 10) {
+			sessionStorage.remove("admin");
+			return View.HOME;
+		}
+		else return View.ADMIN;
 		
-		int role = (int) sessionStorage.get("role");
+	}
+	
+	
+	private View memberLogin() {
+		if (debug) System.out.println("=========일반회원 로그인 페이지=========");
+		System.out.println();
+
+		String id = ScanUtil.nextLine("ID  : ");
+		String pw = ScanUtil.nextLine("PASS: ");
 		
 		List<Object> param = new ArrayList<Object>();
 		param.add(id);
 		param.add(pw);
-		param.add(role);
 		
-		boolean loginChk = memberService.login(param, role);
+		boolean loginChk = memberService.login(param);
 		
 		if(!loginChk) {
-			System.out.println("로그인 실패");
-			return View.LOGIN;
+			System.out.println("로그인을 실패했습니다.");
+			return View.MEMBERLOGIN;
 		} else {
-			System.out.println("로그인 성공");
+			System.out.println("로그인에 성공했습니다.");
 		}
-		if(role == 1) return View.MEMBER;
-		else if(role == 2) return View.ADMIN;
-		return View.HOME;
+		System.out.println();
+		
+		if(loginChk) return View.MEMBER;
+		else return View.HOME;
+	}
+	
+	
+	private View adminLogin() {
+		if (debug) System.out.println("=========관리자 로그인 페이지=========");
+		System.out.println();
+
+		String id = ScanUtil.nextLine("ID  : ");
+		String pw = ScanUtil.nextLine("PASS: ");
+		
+		List<Object> param = new ArrayList<Object>();
+		param.add(id);
+		param.add(pw);
+		
+		boolean loginChk = adminService.login(param);
+		
+		if(!loginChk) {
+			System.out.println("로그인을 실패했습니다.");
+			return View.ADMINLOGIN;
+		} else {
+			System.out.println("로그인에 성공했습니다.");
+		}
+		System.out.println();
+		
+		if(loginChk) return View.ADMIN;
+		else return View.HOME;
 	}
 	
 	
 	private View admin() {
 		
-		if(!sessionStorage.containsKey("admin")) {
-			sessionStorage.put("role", 2);
-			return View.LOGIN;
-		}
+		if (debug) System.out.println("=========관리자 페이지=========");
+		System.out.println();
 		
-		
-		if (debug) System.out.println("=========관리자=========");
-		
-		System.out.println("1. 상품 전체 리스트 출력");
-		System.out.println("2. 상품 추가");
+		System.out.println("1. 공지사항 관리");
+		System.out.println("2. 신고 관리");
+		System.out.println("3. 이용권 관리");
 		System.out.println("3. 로그아웃");
+		System.out.println();
 		
 		int sel = ScanUtil.menu();
 		
-		if (sel==1) return View.ADMIN_PROD_ALL_LIST;
-		else if (sel==2) return View.PROD_INSERT;
-		else if (sel==3) {
+		if (sel==1) return View.ADMIN_NOTICE;
+		else if (sel==2) return View.ADMIN_REPORT;
+		else if (sel==3) return View.ADMIN_TICKET;
+		else if (sel==4) {
 			sessionStorage.remove("admin");
 			return View.HOME;
 		}
 		else return View.ADMIN;
 	}
-	
-	
-	private View member() {
-		
-		if(!sessionStorage.containsKey("member")) {
-			sessionStorage.put("role", 1);
-			return View.LOGIN;
-		}
-		
-		
-		if (debug) System.out.println("=========일반회원=========");
-		
-		System.out.println("1. 내 정보 보기");
-		System.out.println("2. 상품 리스트");
-		System.out.println("3. 로그아웃");
 
-		
-		int sel = ScanUtil.menu();
-		
-		if (sel==1) return View.MYINFO;
-		else if (sel==2) return View.PROD_LIST;
-		else if (sel==3) {
-			sessionStorage.remove("member");
-			return View.HOME;
-		}
-		else return View.MEMBER;
-	}
-	
-	
+
 	private View home() {
 		if (debug) System.out.println("==========홈==========");
-		
+		System.out.println();
+
 		System.out.println("1. 집 매물 정보 보기");
-		System.out.println("2. 일반 회원");
-		System.out.println("3. 회원가입");
-		
+		System.out.println("2. 집 매물 등록하기");
+		System.out.println("3. 로그인");
+		System.out.println("4. 회원가입");
+		System.out.println("5. 공지사항");
+		System.out.println();
+
 		int sel = ScanUtil.menu();
-		
-		if (sel==1) return View.ADMIN;
-		else if (sel==2) return View.MEMBER;
-		else if (sel==3) return View.SIGN;
+
+		if (sel == 1)
+			return View.EST_LIST;
+		else if (sel == 2)
+			return View.EST_ADD;
+		else if (sel == 3)
+			return View.MEMBERLOGIN;
+		else if (sel == 4)
+			return View.SIGN;
+		else if (sel == 5)
+			return View.NOTICE_LIST;
+		else if (sel == 0)
+			return View.ADMINLOGIN;
 		return View.HOME;
 	}
-	
-	
+
 }

@@ -24,30 +24,20 @@ public class MemberService {
 	MemberDao memberDao = MemberDao.getInstance();
 	
 	
-	public boolean login(List<Object> param, int role) {
-		
-		// memberDao.login 메서드로 로그인 시도
+	public boolean login(List<Object> param) {
 		Map<String, Object> member = memberDao.login(param);
 		
 		if(member == null) {
 			return false;
-		}
-		
-		// 1이면 일반회원으로 로그인, 2면 관리자로 로그인
-		if(role == 1) {
+		} else if(member != null) {
 		MainController.sessionStorage.put("member", member);
 		}
-		if(role == 2) {
-		MainController.sessionStorage.put("admin", member);
-		}
-		
 		return true;
 	}
 	
 	
 	public void sign(List<Object> param) {
 		memberDao.sign(param);
-		
 	}
 	
 	

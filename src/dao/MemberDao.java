@@ -22,12 +22,11 @@ public class MemberDao {
 	JDBCUtil jdbc = JDBCUtil.getInstance();
 	
 	public Map<String, Object> login (List<Object> param) {
-		String sql = "SELECT * \r\n" + 
-					 "FROM JAVA_MEMBER\r\n" + 
-					 "WHERE ID = ?\r\n" + 
-					 "AND PASS = ?\r\n" + 
-					 "AND DELYN = 'N'\r\n" + 
-					 "AND ROLE = ?";
+		String sql = " SELECT *\r\n" + 
+					 "FROM MEMBER\r\n" + 
+					 "WHERE MEM_ID = ? \r\n" + 
+					 "AND MEM_PW = ? \r\n" + 
+					 "AND MEM_DELYN = 'N'";
 		
 		return jdbc.selectOne(sql, param);
 	}
@@ -35,7 +34,7 @@ public class MemberDao {
 
 	public void sign(List<Object> param) {
 		String sql = " INSERT INTO JAVA_MEMBER (MEM_NO, ID, PASS, NAME, DELYN, ROLE)\r\n" + 
-				"VALUES ((SELECT NVL(MAX(MEM_NO), 0)+1 FROM JAVA_MEMBER), ?, ?, ?, 'N', 1)";
+					 "VALUES ((SELECT NVL(MAX(MEM_NO), 0)+1 FROM JAVA_MEMBER), ?, ?, ?, 'N', 1)";
 		
 		jdbc.update(sql, param);
 	}
