@@ -34,6 +34,15 @@ public class AdminService {
 		}
 		return true;
 	}
+
+	
+	public Map<String, Object> daySaleTotal(List<Object> param) {
+		return adminDao.daySaleTotal(param);
+	}
+
+	public List<Map<String, Object>> tichetList() {
+		return adminDao.tichetList();
+	}
 	
 	
 }

@@ -1,16 +1,11 @@
 package controller;
 
 import java.math.BigDecimal;
-import java.text.Bidi;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.print.DocFlavor.STRING;
-
-import oracle.net.aso.n;
 import service.AdminService;
 import service.EstateService;
 import service.MemberService;
@@ -89,6 +84,21 @@ public class MainController extends Print {
 //			case ADMIN_SALEYEAR:
 //				view = adminSaleYear();
 //				break;
+			case ADMIN_TICKET:
+				view = adminTicket();
+				break;
+			case TICKET_LIST:
+				view = tichetList();
+				break;
+			case ADMIN_TICKET_INSERT:
+				view = adminTicketInsert();
+				break;
+			case ADMIN_TICKET_UPDATE:
+				view = adminTicketUpdate();
+				break;
+			case ADMIN_TICKET_DELETE:
+				view = adminTicketDelete();
+				break;
 			case MEMBER_UPDATE:
 				view = memberUpdate();
 				break;
@@ -123,9 +133,113 @@ public class MainController extends Print {
 	}
 
 
-	private View adminSaleDay() {
+
+	private View adminTicketDelete() {
+		if (debug) System.out.println("=========이용권 삭제=========");
+		
 		
 		return null;
+	}
+
+	
+	private View adminTicketUpdate() {
+		if (debug) System.out.println("=========이용권 수정=========");
+		
+		
+		return null;
+	}
+
+	
+	private View adminTicketInsert() {
+		if (debug) System.out.println("=========이용권 추가=========");
+		
+		String name = ScanUtil.nextLine("이용권명 : ");
+		int price = ScanUtil.nextInt("이용권 가격 : ");
+		
+		List<Object> param = new ArrayList<Object>();
+		param.add(name);
+		param.add(price);
+		
+		adminService.adminTicketInsert(param);
+		
+		return null;
+	}
+
+	
+	private View adminTicket() {
+		tichetList();
+		System.out.println();
+		
+		System.out.println("1. 이용권 추가");
+		System.out.println("2. 이용권 수정");
+		System.out.println("3. 이용권 삭제");
+		System.out.println("4. 뒤로가기");
+		
+		int sel = ScanUtil.nextInt("메뉴 : ");
+		
+		if (sel==1) return View.ADMIN_TICKET_INSERT;
+		else if (sel==2) return View.ADMIN_TICKET_UPDATE;
+		else if (sel==3) return View.ADMIN_NOTICE_DELETE;
+		else if (sel==4) return View.ADMIN;
+		else return View.ADMIN;
+	}
+	
+	
+	private View tichetList() {
+		System.out.println();
+		
+		List<Map<String, Object>> param = adminService.tichetList();
+		
+		System.out.println("============이용권 안내 [1개월 이용시 금액 (VAT 포함)]=============");
+		for (Map<String, Object> map : param) {
+			BigDecimal no = (BigDecimal)map.get("TIC_NO");
+			String tier = (String)map.get("TIC_TIER");
+			String price = (String)map.get("TIC_PRICE");
+			String comment = (String)map.get("TIC_COMMENT");
+			System.out.println("| No."+no+" "+tier+"\t   [가격]"+price+"원    [설명] "+comment+"  |");
+		}
+		System.out.println(" =======================================================");
+		
+		return View.ADMIN_TICKET;
+	}
+
+	
+	private View adminSaleDay() {
+		if (debug) System.out.println("=========일 매출 내역=========");
+		System.out.println();
+		
+		System.out.println("매출 조회를 원하는 날짜를 입력하세요.");
+		String year = ScanUtil.nextLine("연도 : ");
+		String month = ScanUtil.nextLine("월 : ");
+		String day = ScanUtil.nextLine("일 : ");
+		
+		List<Object> param = new ArrayList<Object>();
+		param.add(year);
+		param.add(month);
+		param.add(day);
+		
+//		if (month.equals("1") || month.equals("2") || month.equals("3") || month.equals("4") || month.equals("5")
+//				 || month.equals("6") || month.equals("7") || month.equals("8") || month.equals("9")) {
+//			String month1 = "0"+month;
+//			date.add(month1);
+//		} else date.add(month);
+//		
+//		if (day.equals("1") || day.equals("2") || day.equals("3") || day.equals("4") || day.equals("5")
+//				 || day.equals("6") || day.equals("7") || day.equals("8") || day.equals("9")) {
+//			String day1 = "0"+day;
+//			date.add(day1);
+//		} else date.add(day);
+		
+		Map<String, Object> date = (Map<String, Object>)adminService.daySaleTotal(param);
+		String daySaleTotal = (String)date.get("PRICE");
+		
+		
+		System.out.println("[ "+year+"년  "+month+"월  "+day+"일  매출 ] "+daySaleTotal+"원");
+
+		
+		
+		System.out.println();
+		return View.ADMIN_SALE;
 	}
 
 	
@@ -135,14 +249,14 @@ public class MainController extends Print {
 		System.out.println("1. 일 매출 조회");
 		System.out.println("2. 월 매출 조회");
 		System.out.println("3. 연 매출 조회");
-		System.out.println("4. 관리자 홈");
-		
+		System.out.println("4. 뒤로가기");
+
 		int sel = ScanUtil.nextInt("메뉴 : ");
 		
-		if (sel == 1) View.ADMIN_SALEDAY;
-		else if (sel == 2) View.ADMIN_SALEMONTH;
-		else if (sel == 3) View.ADMIN_SALEYEAR;
-		else if (sel == 4) View.ADMIN;
+		if (sel == 1) return View.ADMIN_SALEDAY;
+		else if (sel == 2) return View.ADMIN_SALEMONTH;
+		else if (sel == 3) return View.ADMIN_SALEYEAR;
+		else if (sel == 4) return View.ADMIN;
 		else return View.ADMIN;
 	}
 
@@ -294,6 +408,7 @@ public class MainController extends Print {
 		System.out.println("1. 공지사항 작성");
 		System.out.println("2. 공지사항 수정");
 		System.out.println("3. 공지사항 삭제");
+		System.out.println("4. 뒤로가기");
 		
 		System.out.println();
 		
@@ -302,6 +417,7 @@ public class MainController extends Print {
 		if (sel==1) return View.ADMIN_NOTICE_INSERT;
 		else if (sel==2) return View.ADMIN_NOTICE_UPDATE;
 		else if (sel==3) return View.ADMIN_NOTICE_DELETE;
+		else if (sel==4) return View.ADMIN;
 		else return View.HOME;
 	}
 
