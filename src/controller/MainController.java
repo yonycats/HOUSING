@@ -23,6 +23,7 @@ public class MainController extends Print {
 	MemberService memberService = MemberService.getInstance();
 	NoticeService noticeService = NoticeService.getInstance();
 	EstateService estateService = EstateService.getInstance();
+	qqqqqqqqqqqqqq
 
 	boolean debug = true;
 
