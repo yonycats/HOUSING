@@ -32,7 +32,6 @@ public class MainController extends Print {
 
 	private void start() {
 		View view = View.HOME;
-		System.out.println("제발 돼라 어ㅓㅇ엉");
 		while (true) {
 			switch (view) {
 			case HOME:
