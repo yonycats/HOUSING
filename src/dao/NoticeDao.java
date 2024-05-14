@@ -30,6 +30,13 @@ public class NoticeDao {
 
 		return jdbc.selectList(sql);
 	}
+
+	
+	public void adminNoticeInsert(List<Object> param) {
+		String sql = " ";
+		
+		jdbc.update(sql, param);
+	}
 	
 	
 	

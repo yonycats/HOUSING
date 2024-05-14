@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import oracle.net.aso.n;
 import service.AdminService;
 import service.EstateService;
 import service.MemberService;
@@ -58,6 +59,15 @@ public class MainController extends Print {
 			case ADMIN_NOTICE:
 				view = adminNotice();
 				break;
+			case ADMIN_NOTICE_INSERT:
+				view = adminNoticeInsert();
+				break;
+//			case ADMIN_NOTICE_UPDATE:
+//				view = adminNoticeUpdate();
+//				break;
+//			case ADMIN_NOTICE_DELETE:
+//				view = adminNoticeDelete();
+//				break;
 //			case ADMIN_REPORT:
 //				view = adminReport();
 //				break;
@@ -100,6 +110,25 @@ public class MainController extends Print {
 	
 
 
+	private View adminNoticeInsert() {
+		if (debug) System.out.println("=========공지사항 작성=========");
+		noticeList();
+		System.out.println();
+		
+		List<Object> param = new ArrayList<Object>();
+		
+		String title = ScanUtil.nextLine("제목 : ");
+		String content = ScanUtil.nextLine("내용 : ");
+		
+		param.add(title);
+		param.add(content);
+		
+		noticeService.adminNoticeInsert(param);
+		
+		return View.ADMIN_NOTICE;
+	}
+
+	
 	private View noticeList() {
 		System.out.println();
 		List<Map<String, Object>> param = noticeService.noticeList();
@@ -126,7 +155,13 @@ public class MainController extends Print {
 		System.out.println("3. 공지사항 삭제");
 		
 		System.out.println();
-		return null;
+		
+		int sel = ScanUtil.menu();
+		
+		if (sel==1) return View.ADMIN_NOTICE_INSERT;
+		else if (sel==2) return View.ADMIN_NOTICE_DELETE;
+		else if (sel==3) return View.ADMIN_NOTICE_DELETE;
+		else return View.HOME;
 	}
 
 	

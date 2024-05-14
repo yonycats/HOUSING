@@ -26,6 +26,11 @@ public class NoticeService {
 	public List<Map<String, Object>> noticeList() {
 		return noticeDao.noticeList();
 	}
+
+	
+	public void adminNoticeInsert(List<Object> param) {
+		noticeDao.adminNoticeInsert(param);
+	}
 	
 	
 	
