@@ -36,6 +36,7 @@ public class MainController extends Print {
 			switch (view) {
 			case HOME:
 				view = home();
+				System.out.println("dkasdnaolsdkj");
 				break;
 			case ADMINLOGIN:
 				view = adminLogin();
