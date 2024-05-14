@@ -31,6 +31,16 @@ public class NoticeService {
 	public void adminNoticeInsert(List<Object> param) {
 		noticeDao.adminNoticeInsert(param);
 	}
+
+	
+	public void adminNoticeUpdate(List<Object> param) {
+		noticeDao.adminNoticeUpdate(param);
+	}
+
+	
+	public int adminNoticeDelete(List<Object> param) {
+		return noticeDao.adminNoticeDelete(param);
+	}
 	
 	
 	

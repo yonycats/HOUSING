@@ -1,11 +1,14 @@
 package controller;
 
 import java.math.BigDecimal;
+import java.text.Bidi;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.print.DocFlavor.STRING;
 
 import oracle.net.aso.n;
 import service.AdminService;
@@ -62,24 +65,36 @@ public class MainController extends Print {
 			case ADMIN_NOTICE_INSERT:
 				view = adminNoticeInsert();
 				break;
-//			case ADMIN_NOTICE_UPDATE:
-//				view = adminNoticeUpdate();
-//				break;
-//			case ADMIN_NOTICE_DELETE:
-//				view = adminNoticeDelete();
-//				break;
+			case ADMIN_NOTICE_UPDATE:
+				view = adminNoticeUpdate();
+				break;
+			case ADMIN_NOTICE_DELETE:
+				view = adminNoticeDelete();
+				break;
 //			case ADMIN_REPORT:
 //				view = adminReport();
 //				break;
 //			case ADMIN_TICKET:
 //				view = adminTicket();
 //				break;
-//			case MEMBER_UPDATE:
-//				view = memberUpdate();
+			case ADMIN_SALE:
+				view = adminSale();
+				break;
+			case ADMIN_SALEDAY:
+				view = adminSaleDay();
+				break;
+//			case ADMIN_SALEMONTH:
+//				view = adminSaleMonth();
 //				break;
-//			case MEMBER_DELETE:
-//				view = memberDelete();
+//			case ADMIN_SALEYEAR:
+//				view = adminSaleYear();
 //				break;
+			case MEMBER_UPDATE:
+				view = memberUpdate();
+				break;
+			case MEMBER_DELETE:
+				view = memberDelete();
+				break;
 //			case MEMBER_MYESTLIST:
 //				view = memberMyEstList();
 //				break;
@@ -107,9 +122,134 @@ public class MainController extends Print {
 		}
 	}
 
+
+	private View adminSaleDay() {
+		
+		return null;
+	}
+
 	
+	private View adminSale() {
+		if (debug) System.out.println("=========매출 관리=========");
+		
+		System.out.println("1. 일 매출 조회");
+		System.out.println("2. 월 매출 조회");
+		System.out.println("3. 연 매출 조회");
+		System.out.println("4. 관리자 홈");
+		
+		int sel = ScanUtil.nextInt("메뉴 : ");
+		
+		if (sel == 1) View.ADMIN_SALEDAY;
+		else if (sel == 2) View.ADMIN_SALEMONTH;
+		else if (sel == 3) View.ADMIN_SALEYEAR;
+		else if (sel == 4) View.ADMIN;
+		else return View.ADMIN;
+	}
 
+	
+	private View memberDelete() {
+		if (debug) System.out.println("=========회원 탈퇴=========");
+		
+		Map<String, Object> member = (Map<String, Object>) sessionStorage.get("member");
+		String id = (String)member.get("MEM_ID");
+		
+		List<Object> param = new ArrayList<Object>();
+		param.add(id);
+		
+		System.out.println();
+		System.out.println("정말 탈퇴하시겠습니까?");
+		System.out.println();
+		int sel = ScanUtil.nextInt("1. 삭제\t2. 취소");
+		
+		if (sel == 1) {
+			int result = memberService.memberDelete(param);
+			if (result == 1) {
+				System.out.println();
+				System.out.println("회원 탈퇴에 성공했습니다.");
+				System.out.println();
+				return View.HOME;
+			}
+		} else if (sel == 2) {
+			System.out.println();
+			System.out.println("회원 탈퇴를 취소하였습니다.");
+			System.out.println();
+			return View.MEMBER;
+		}
+		return View.HOME;
+	}
 
+	
+	private View memberUpdate() {
+		if(debug) System.out.println("=========회원정보 변경=========");
+		
+		myInfo();
+		System.out.println();
+		System.out.println("수정할 정보를 입력하세요.");
+		
+		Map<String, Object> member = (Map<String, Object>) sessionStorage.get("member");
+		String id = (String)member.get("MEM_ID");
+		
+		String pw = ScanUtil.nextLine("PW : ");
+		String name = ScanUtil.nextLine("이름 : ");
+		String tel = ScanUtil.nextLine("전화번호 : ");
+		String add = ScanUtil.nextLine("주소 : ");
+		String nickName = ScanUtil.nextLine("닉네임 : ");
+		
+		List<Object> param = new ArrayList<Object>();
+		
+		param.add(pw);
+		param.add(name);
+		param.add(tel);
+		param.add(add);
+		param.add(nickName);
+		param.add(id);
+		
+		memberService.memberUpdate(param);
+		
+		myInfo();
+		
+		return View.MEMBER;
+	}
+
+	
+	private View adminNoticeDelete() {
+		if (debug) System.out.println("=========공지사항 삭제=========");
+		noticeList();
+		System.out.println();
+		
+		List<Object> param = new ArrayList<Object>();
+		
+		int no = ScanUtil.nextInt("공지번호 : ");
+		
+		param.add(no);
+		
+		noticeService.adminNoticeDelete(param);
+		
+		return View.ADMIN_NOTICE;
+	}
+
+	
+	private View adminNoticeUpdate() {
+		if (debug) System.out.println("=========공지사항 수정=========");
+		noticeList();
+		System.out.println();
+		
+		List<Object> param = new ArrayList<Object>();
+		
+		int no = ScanUtil.nextInt("공지번호 : ");
+		String title = ScanUtil.nextLine("제목 : ");
+		String content = ScanUtil.nextLine("내용 : ");
+		
+		param.add(title);
+		param.add(content);
+		param.add(no);
+		
+		noticeService.adminNoticeUpdate(param);
+		
+		return View.ADMIN_NOTICE;
+	}
+
+	
 	private View adminNoticeInsert() {
 		if (debug) System.out.println("=========공지사항 작성=========");
 		noticeList();
@@ -134,10 +274,11 @@ public class MainController extends Print {
 		List<Map<String, Object>> param = noticeService.noticeList();
 				
 		for (Map<String, Object> map : param) {
+			BigDecimal no = (BigDecimal)map.get("NTC_NO");
 			String date = (String)map.get("NTC_DATE");
 			String title = (String)map.get("NTC_TITLE");
 			String content = (String)map.get("NTC_CONTENT");
-			System.out.println("[등록일] "+date+"   "+title+"    \t [내용] "+content);
+			System.out.println("No."+no+"\t[등록일] "+date+"   "+title+"    \t [내용] "+content);
 		}	
 		System.out.println();
 		return View.HOME;
@@ -159,7 +300,7 @@ public class MainController extends Print {
 		int sel = ScanUtil.menu();
 		
 		if (sel==1) return View.ADMIN_NOTICE_INSERT;
-		else if (sel==2) return View.ADMIN_NOTICE_DELETE;
+		else if (sel==2) return View.ADMIN_NOTICE_UPDATE;
 		else if (sel==3) return View.ADMIN_NOTICE_DELETE;
 		else return View.HOME;
 	}
@@ -178,20 +319,23 @@ public class MainController extends Print {
 
 	
 	private View myInfo() {
-		if (debug) System.out.println("=========내 정보 보기=========");
 		System.out.println();
 		
-		Map<String, Object> myInfo = (Map<String, Object>) sessionStorage.get("member");
+		Map<String, Object> member = (Map<String, Object>) sessionStorage.get("member");
+		String id = (String)member.get("MEM_ID");
 		
-		String id = (String)myInfo.get("MEM_ID");
-		String pw = (String)myInfo.get("MEM_PW");
-		String name = (String)myInfo.get("MEM_NAME");
-		String tel = (String)myInfo.get("MEM_TEL");
-		String address = (String)myInfo.get("MEM_ADDRESS");
-		String nicName = (String)myInfo.get("MEM_NICKNAME");
-		BigDecimal bank = (BigDecimal)myInfo.get("MEM_BANK");
-		String tier = (String)myInfo.get("TIC_TIER");
-		BigDecimal rptCnt = (BigDecimal)myInfo.get("MEM_RPTCNT");
+		List<Object> param = new ArrayList<Object>();
+		param.add(id);
+		Map<String, Object> param1 = memberService.myInfo(param);
+		
+		String pw = (String)param1.get("MEM_PW");
+		String name = (String)param1.get("MEM_NAME");
+		String tel = (String)param1.get("MEM_TEL");
+		String address = (String)param1.get("MEM_ADDRESS");
+		String nicName = (String)param1.get("MEM_NICKNAME");
+		BigDecimal bank = (BigDecimal)param1.get("MEM_BANK");
+		String tier = (String)param1.get("TIC_TIER");
+		BigDecimal rptCnt = (BigDecimal)param1.get("MEM_RPTCNT");
 		
 		System.out.println("ID : "+id+"\t PW : "+pw+"\t 이름 : "+name+"\t 주소 : "+address);
 		System.out.println("전화번호 : "+tel+"\t 닉네임 : "+nicName+"\t 현재 잔액 : "+bank+"\t 보유 이용권 : "+tier+"\t나의 경고 횟수 : "+rptCnt);
@@ -269,7 +413,7 @@ public class MainController extends Print {
 		System.out.println();
 
 		System.out.println("1. 회원 정보 보기\t2. 회원 정보 변경\t3. 회원 탈퇴\t4. 내 매물 정보\t5. 리뷰 관리");
-		System.out.println("6. 거래 목록\t7. 찜 목록\t8. 신고\t9. 홈\t10. 로그아웃");
+		System.out.println("6. 거래 목록\t7. 찜 목록\t\t8. 신고\t\t9. 홈\t\t10. 로그아웃");
 		System.out.println();
 		
 		int sel = ScanUtil.menu();
@@ -296,8 +440,10 @@ public class MainController extends Print {
 		if (debug) System.out.println("=========일반회원 로그인 페이지=========");
 		System.out.println();
 
-		String id = ScanUtil.nextLine("ID  : ");
-		String pw = ScanUtil.nextLine("PASS: ");
+//		String id = ScanUtil.nextLine("ID  : ");
+//		String pw = ScanUtil.nextLine("PASS: ");
+		String id = "abc123kdm";
+		String pw = "pass123!";
 		
 		List<Object> param = new ArrayList<Object>();
 		param.add(id);
@@ -322,8 +468,10 @@ public class MainController extends Print {
 		if (debug) System.out.println("=========관리자 로그인 페이지=========");
 		System.out.println();
 
-		String id = ScanUtil.nextLine("ID  : ");
-		String pw = ScanUtil.nextLine("PASS: ");
+//		String id = ScanUtil.nextLine("ID  : ");
+//		String pw = ScanUtil.nextLine("PASS: ");
+		String id = "admin";
+		String pw = "admin";
 		
 		List<Object> param = new ArrayList<Object>();
 		param.add(id);
@@ -352,7 +500,8 @@ public class MainController extends Print {
 		System.out.println("1. 공지사항 관리");
 		System.out.println("2. 신고 관리");
 		System.out.println("3. 이용권 관리");
-		System.out.println("3. 로그아웃");
+		System.out.println("4. 매출 관리");		
+		System.out.println("5. 로그아웃");
 		System.out.println();
 		
 		int sel = ScanUtil.menu();
@@ -360,7 +509,8 @@ public class MainController extends Print {
 		if (sel==1) return View.ADMIN_NOTICE;
 		else if (sel==2) return View.ADMIN_REPORT;
 		else if (sel==3) return View.ADMIN_TICKET;
-		else if (sel==4) {
+		else if (sel==4) return View.ADMIN_SALE;
+		else if (sel==5) {
 			sessionStorage.remove("admin");
 			return View.HOME;
 		}

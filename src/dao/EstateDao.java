@@ -28,7 +28,7 @@ public class EstateDao {
 					 "FROM ESTATE\r\n" + 
 					 "WHERE EST_DELYN = 'N'\r\n" + 
 					 "AND EST_STATE IN (1,2)\r\n" + 
-					 "ORDER BY EST_DATE DESC";
+					 "ORDER BY EST_NO DESC";
 		
 		return jbdc.selectList(sql);
 	}

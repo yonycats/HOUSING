@@ -39,6 +39,21 @@ public class MemberService {
 	public void sign(List<Object> param) {
 		memberDao.sign(param);
 	}
+
+	
+	public void memberUpdate(List<Object> param) {
+		memberDao.memberUpdate(param);
+	}
+
+	
+	public Map<String, Object> myInfo(List<Object> param) {
+		return memberDao.myInfo(param);
+	}
+
+	
+	public int memberDelete(List<Object> param) {
+		return memberDao.memberDelete(param);
+	}
 	
 	
 }

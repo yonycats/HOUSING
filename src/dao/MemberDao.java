@@ -38,6 +38,32 @@ public class MemberDao {
 		
 		jdbc.update(sql, param);
 	}
+
+	public void memberUpdate(List<Object> param) {
+		String sql = " UPDATE MEMBER\r\n" + 
+					 "SET MEM_PW = ?, MEM_NAME = ?, MEM_TEL = ?, \r\n" + 
+					 "    MEM_ADDRESS = ?, MEM_NICKNAME = ?\r\n" + 
+					 "WHERE MEM_ID = ?";
+		
+		jdbc.update(sql, param);
+	}
+
+	
+	public Map<String, Object> myInfo(List<Object> param) {
+		String sql = " SELECT MEM_PW, MEM_NAME, MEM_TEL, MEM_ADDRESS, MEM_NICKNAME, MEM_BANK, TIC_TIER, MEM_RPTCNT\r\n" + 
+				"FROM MEMBER \r\n" + 
+				"WHERE MEM_ID = ?";
+
+		return jdbc.selectOne(sql, param);
+	}
+
+	public int memberDelete(List<Object> param) {
+		String sql = " UPDATE MEMBER\r\n" + 
+					 "SET MEM_DELYN = 'Y'\r\n" + 
+					 "WHERE MEM_ID = ?";
+		
+		return jdbc.update(sql, param);
+	}
 	
 	
 	
