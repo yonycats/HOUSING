@@ -25,12 +25,12 @@ public class AdminService {
 	
 	
 	public boolean login(List<Object> param) {
-		Map<String, Object> member = adminDao.login(param);
+		Map<String, Object> admin = adminDao.login(param);
 		
-		if(member == null) {
+		if(admin == null) {
 			return false;
-		} else if(member != null) {
-		MainController.sessionStorage.put("member", member);
+		} else if(admin != null) {
+		MainController.sessionStorage.put("admin", admin);
 		}
 		return true;
 	}

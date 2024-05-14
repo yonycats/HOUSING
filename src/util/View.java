@@ -5,10 +5,12 @@ public enum View {
 	HOME,							// 홈	
 	ADMIN,						    // 관리자
 	MEMBER,
+	REALTOR,
+	LOGIN,
+	SIGN,
 	
 	ADMINLOGIN,
 	MEMBERLOGIN,
-	SIGN,
 	MYINFO,
 	
 	ADMIN_NOTICE,

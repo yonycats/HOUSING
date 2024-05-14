@@ -11,6 +11,7 @@ import service.AdminService;
 import service.EstateService;
 import service.MemberService;
 import service.NoticeService;
+import service.RealtorService;
 import util.ScanUtil;
 import util.View;
 import view.Print;
@@ -23,7 +24,7 @@ public class MainController extends Print {
 	MemberService memberService = MemberService.getInstance();
 	NoticeService noticeService = NoticeService.getInstance();
 	EstateService estateService = EstateService.getInstance();
-
+	RealtorService realtorService = RealtorService.getInstance();
 	boolean debug = true;
 
 	public static void main(String[] args) {
@@ -31,25 +32,32 @@ public class MainController extends Print {
 	}
 
 	private void start() {
-		System.out.println("gㅇ너ㅠ러ㅠㅈㄴ");
 		View view = View.HOME;
 		while (true) {
 			switch (view) {
 			case HOME:
 				view = home();
-				System.out.println("dkasdnaolsdkj");
 				break;
-			case ADMINLOGIN:
-				view = adminLogin();
+//			case ADMINLOGIN:
+//				view = adminLogin();
+//				break;
+//			case MEMBERLOGIN:
+//				view = memberLogin();
+//				break;
+			case SIGN:
+				view = sign();
 				break;
-			case MEMBERLOGIN:
-				view = memberLogin();
+			case LOGIN:
+				view = login();
 				break;
 			case ADMIN:
 				view = admin();
 				break;
 			case MEMBER:
 				view = member();
+				break;
+			case REALTOR:
+				view = realtor();
 				break;
 			case NOTICE_LIST:
 				view = noticeList();
@@ -98,78 +106,118 @@ public class MainController extends Print {
 			}
 		}
 	}
+	private View realtor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	
+	private View sign() {
+		printSignList();
+		int sel = ScanUtil.menu();
+//		while (true) {
+//			String id=ScanUtil.nextLine("회원 id입력:");
+//			if (data.containsKey(id))
+//				System.out.println("이미존재하는 아이디");
+//			else
+//				break;
+//		}
+		String id = ScanUtil.nextLine("회원 id입력:");
+		String pw = ScanUtil.nextLine("회원 pw입력:");
+		String name = ScanUtil.nextLine("회원 이름 입력:");
+		String tel = ScanUtil.nextLine("회원 전화번호 입력:");
+		String address = ScanUtil.nextLine("회원 주소입력:");
+		String nickName = ScanUtil.nextLine("회원 닉네임 입력:");
+		List<Object> param = new ArrayList<Object>();
+		param.add(id);
+		param.add(pw);
+		param.add(name);
+		param.add(tel);
+		param.add(address);
+		param.add(nickName);
+		if (sel == 2) {
+			String comName = ScanUtil.nextLine("공인중개소 이름 입력: ");
+			String comtel = ScanUtil.nextLine("공인중개소 전화번호 입력: ");
+			String comAddress = ScanUtil.nextLine("공인중개소 주소: ");
+			String comComent = ScanUtil.nextLine("공인중개소 소개: ");
+			param.add(comName);
+			param.add(comtel);
+			param.add(comAddress);
+			param.add(comComent);
+			realtorService.sign(param);
 
+		} else if (sel == 1)
+			memberService.sign(param);
+		System.out.println("회원가입 완료");
+		return View.HOME;
+
+	}
 
 	private View noticeList() {
 		System.out.println();
 		List<Map<String, Object>> param = noticeService.noticeList();
-				
+
 		for (Map<String, Object> map : param) {
-			String date = (String)map.get("NTC_DATE");
-			String title = (String)map.get("NTC_TITLE");
-			String content = (String)map.get("NTC_CONTENT");
-			System.out.println("[등록일] "+date+"   "+title+"    \t [내용] "+content);
-		}	
+			String date = (String) map.get("NTC_DATE");
+			String title = (String) map.get("NTC_TITLE");
+			String content = (String) map.get("NTC_CONTENT");
+			System.out.println("[등록일] " + date + "   " + title + "    \t [내용] " + content);
+		}
 		System.out.println();
 		return View.HOME;
 	}
-	
-	
+
 	private View adminNotice() {
-		if (debug) System.out.println("=========공지사항 관리=========");
+		if (debug)
+			System.out.println("=========공지사항 관리=========");
 		System.out.println();
 
 		noticeList();
-		
+
 		System.out.println("1. 공지사항 작성");
 		System.out.println("2. 공지사항 수정");
 		System.out.println("3. 공지사항 삭제");
-		
+
 		System.out.println();
 		return null;
 	}
 
-	
 	private View estAdd() {
-		if(!sessionStorage.containsKey("member")) {
+		if (!sessionStorage.containsKey("member")) {
 			System.out.println("로그인한 회원만 사용가능한 메뉴입니다.");
 			return View.MEMBERLOGIN;
 		}
-		
-		
-		
+
 		return View.HOME;
 	}
 
-	
 	private View myInfo() {
-		if (debug) System.out.println("=========내 정보 보기=========");
+		if (debug)
+			System.out.println("=========내 정보 보기=========");
 		System.out.println();
-		
+
 		Map<String, Object> myInfo = (Map<String, Object>) sessionStorage.get("member");
-		
-		String id = (String)myInfo.get("MEM_ID");
-		String pw = (String)myInfo.get("MEM_PW");
-		String name = (String)myInfo.get("MEM_NAME");
-		String tel = (String)myInfo.get("MEM_TEL");
-		String address = (String)myInfo.get("MEM_ADDRESS");
-		String nicName = (String)myInfo.get("MEM_NICKNAME");
-		BigDecimal bank = (BigDecimal)myInfo.get("MEM_BANK");
-		String tier = (String)myInfo.get("TIC_TIER");
-		BigDecimal rptCnt = (BigDecimal)myInfo.get("MEM_RPTCNT");
-		
-		System.out.println("ID : "+id+"\t PW : "+pw+"\t 이름 : "+name+"\t 주소 : "+address);
-		System.out.println("전화번호 : "+tel+"\t 닉네임 : "+nicName+"\t 현재 잔액 : "+bank+"\t 보유 이용권 : "+tier+"\t나의 경고 횟수 : "+rptCnt);
+
+		String id = (String) myInfo.get("MEM_ID");
+		String pw = (String) myInfo.get("MEM_PW");
+		String name = (String) myInfo.get("MEM_NAME");
+		String tel = (String) myInfo.get("MEM_TEL");
+		String address = (String) myInfo.get("MEM_ADDRESS");
+		String nicName = (String) myInfo.get("MEM_NICKNAME");
+		BigDecimal bank = (BigDecimal) myInfo.get("MEM_BANK");
+		String tier = (String) myInfo.get("TIC_TIER");
+		BigDecimal rptCnt = (BigDecimal) myInfo.get("MEM_RPTCNT");
+
+		System.out.println("ID : " + id + "\t PW : " + pw + "\t 이름 : " + name + "\t 주소 : " + address);
+		System.out.println("전화번호 : " + tel + "\t 닉네임 : " + nicName + "\t 현재 잔액 : " + bank + "\t 보유 이용권 : " + tier
+				+ "\t나의 경고 횟수 : " + rptCnt);
 		System.out.println();
-		
+
 		return View.MEMBER;
 	}
-	
-	
+
 	private View estList() {
-		if (debug) System.out.println("=========집 매물 정보 보기=========");
+		if (debug)
+			System.out.println("=========집 매물 정보 보기=========");
 		System.out.println();
 
 		List<Map<String, Object>> param = estateService.estList();
@@ -230,113 +278,102 @@ public class MainController extends Print {
 		return View.HOME;
 	}
 
-	
 	private View member() {
-		if (debug) System.out.println("=========일반회원 페이지=========");
+		if (debug)
+			System.out.println("=========일반회원 페이지=========");
 		System.out.println();
 
 		System.out.println("1. 회원 정보 보기\t2. 회원 정보 변경\t3. 회원 탈퇴\t4. 내 매물 정보\t5. 리뷰 관리");
 		System.out.println("6. 거래 목록\t7. 찜 목록\t8. 신고\t9. 홈\t10. 로그아웃");
 		System.out.println();
-		
+
 		int sel = ScanUtil.menu();
 
-		if (sel == 1) return View.MYINFO;
-		else if (sel == 2) return View.MEMBER_UPDATE;
-		else if (sel == 3) return View.MEMBER_DELETE;
-		else if (sel == 4) return View.MEMBER_MYESTLIST;
-		else if (sel == 5) return View.MEMBER_REVIEW;
-		else if (sel == 6) return View.MEMBER_MYSALELIST;
-		else if (sel == 7) return View.MEMBER_WISHLIST;
-		else if (sel == 8) return View.MEMBER_REPORT;
-		else if (sel == 9) return View.HOME;
+		if (sel == 1)
+			return View.MYINFO;
+		else if (sel == 2)
+			return View.MEMBER_UPDATE;
+		else if (sel == 3)
+			return View.MEMBER_DELETE;
+		else if (sel == 4)
+			return View.MEMBER_MYESTLIST;
+		else if (sel == 5)
+			return View.MEMBER_REVIEW;
+		else if (sel == 6)
+			return View.MEMBER_MYSALELIST;
+		else if (sel == 7)
+			return View.MEMBER_WISHLIST;
+		else if (sel == 8)
+			return View.MEMBER_REPORT;
+		else if (sel == 9)
+			return View.HOME;
 		else if (sel == 10) {
 			sessionStorage.remove("admin");
 			return View.HOME;
-		}
-		else return View.ADMIN;
-		
-	}
-	
-	
-	private View memberLogin() {
-		if (debug) System.out.println("=========일반회원 로그인 페이지=========");
-		System.out.println();
+		} else
+			return View.ADMIN;
 
-		String id = ScanUtil.nextLine("ID  : ");
-		String pw = ScanUtil.nextLine("PASS: ");
-		
-		List<Object> param = new ArrayList<Object>();
-		param.add(id);
-		param.add(pw);
-		
-		boolean loginChk = memberService.login(param);
-		
-		if(!loginChk) {
-			System.out.println("로그인을 실패했습니다.");
-			return View.MEMBERLOGIN;
-		} else {
-			System.out.println("로그인에 성공했습니다.");
-		}
-		System.out.println();
-		
-		if(loginChk) return View.MEMBER;
-		else return View.HOME;
 	}
-	
-	
-	private View adminLogin() {
-		if (debug) System.out.println("=========관리자 로그인 페이지=========");
-		System.out.println();
-
-		String id = ScanUtil.nextLine("ID  : ");
-		String pw = ScanUtil.nextLine("PASS: ");
-		
-		List<Object> param = new ArrayList<Object>();
-		param.add(id);
-		param.add(pw);
-		
-		boolean loginChk = adminService.login(param);
-		
-		if(!loginChk) {
-			System.out.println("로그인을 실패했습니다.");
-			return View.ADMINLOGIN;
-		} else {
-			System.out.println("로그인에 성공했습니다.");
-		}
-		System.out.println();
-		
-		if(loginChk) return View.ADMIN;
-		else return View.HOME;
-	}
-	
-	
-	private View admin() {
-		
-		if (debug) System.out.println("=========관리자 페이지=========");
-		System.out.println();
-		
-		System.out.println("1. 공지사항 관리");
-		System.out.println("2. 신고 관리");
-		System.out.println("3. 이용권 관리");
-		System.out.println("3. 로그아웃");
-		System.out.println();
-		
+	private View login() {
+		boolean loginChk=false;
+		printLoginList();
 		int sel = ScanUtil.menu();
+		if(sel==1) System.out.print("=========일반회원");
+		else if(sel==2) System.out.print("=========공인중개사");
+		else if(sel==0) System.out.print("=========관리자");
+		System.out.println(" 로그인 페이지=========");
 		
-		if (sel==1) return View.ADMIN_NOTICE;
-		else if (sel==2) return View.ADMIN_REPORT;
-		else if (sel==3) return View.ADMIN_TICKET;
-		else if (sel==4) {
+		String id = ScanUtil.nextLine("ID  : ");
+		String pw = ScanUtil.nextLine("PASS: ");
+		
+		List<Object> param = new ArrayList<Object>();
+		param.add(id);
+		param.add(pw);
+		
+		if(sel==1) loginChk = memberService.login(param);
+		else if(sel==2) loginChk = realtorService.login(param);
+		else if(sel==0) loginChk = adminService.login(param);
+		
+		
+		if (!loginChk) {
+			System.out.println("로그인을 실패했습니다.");
+			return View.LOGIN;
+		} else {
+			System.out.println("로그인에 성공했습니다.");
+			if(sel==1) {
+				return View.MEMBER;
+			}
+			else if(sel==2) {
+				return View.REALTOR;
+			}
+			else if(sel==0) {
+				return View.ADMIN;
+			}
+		}
+		return null;
+	}
+	private View admin() {
+
+		printAdmin();
+
+		int sel = ScanUtil.menu();
+
+		if (sel == 1)
+			return View.ADMIN_NOTICE;
+		else if (sel == 2)
+			return View.ADMIN_REPORT;
+		else if (sel == 3)
+			return View.ADMIN_TICKET;
+		else if (sel == 4) {
 			sessionStorage.remove("admin");
 			return View.HOME;
-		}
-		else return View.ADMIN;
+		} else
+			return View.ADMIN;
 	}
 
-
 	private View home() {
-		if (debug) System.out.println("==========홈==========");
+		if (debug)
+			System.out.println("==========홈==========");
 		System.out.println();
 
 		System.out.println("1. 집 매물 정보 보기");
@@ -353,13 +390,13 @@ public class MainController extends Print {
 		else if (sel == 2)
 			return View.EST_ADD;
 		else if (sel == 3)
-			return View.MEMBERLOGIN;
+			return View.LOGIN;
 		else if (sel == 4)
 			return View.SIGN;
 		else if (sel == 5)
 			return View.NOTICE_LIST;
-		else if (sel == 0)
-			return View.ADMINLOGIN;
+//		else if (sel == 0)
+//			return View.ADMINLOGIN;
 		return View.HOME;
 	}
 
