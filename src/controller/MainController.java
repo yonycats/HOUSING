@@ -31,13 +31,11 @@ public class MainController extends Print {
 	}
 
 	private void start() {
-		System.out.println("gㅇ너ㅠ러ㅠㅈㄴ");
 		View view = View.HOME;
 		while (true) {
 			switch (view) {
 			case HOME:
 				view = home();
-				System.out.println("dkasdnaolsdkj");
 				break;
 			case ADMINLOGIN:
 				view = adminLogin();
