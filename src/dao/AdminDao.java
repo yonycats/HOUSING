@@ -52,6 +52,29 @@ public class AdminDao {
 		
 		return jdbc.selectList(sql);
 	}
+
+	public void adminTicketInsert(List<Object> param) {
+		String sql = " INSERT INTO TICKET (TIC_NO, TIC_TIER, TIC_PRICE, TIC_COMMENT)\r\n" + 
+					 "VALUES ((SELECT NVL(MAX(TIC_NO),0)+1 FROM TICKET), ?, ?, ?)";
+				
+		jdbc.update(sql, param);
+	}
+	
+	
+	public void adminTicketUpdate(List<Object> param) {
+		String sql = " UPDATE TICKET\r\n" + 
+					 "SET TIC_TIER = ?, TIC_PRICE = ?, TIC_COMMENT = ?\r\n" + 
+					  "WHERE TIC_NO = ?";
+	
+		jdbc.update(sql, param);
+	}
+
+	public int adminTicketDelete(List<Object> param) {
+			String sql = " DELETE FROM TICKET\r\n" + 
+					"WHERE TIC_NO = ?";
+		
+		return jdbc.update(sql, param);
+	}
 	
 	
 }

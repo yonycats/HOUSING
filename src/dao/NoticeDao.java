@@ -54,10 +54,6 @@ public class NoticeDao {
 	
 	return jdbc.update(sql, param);
 	}
-	
-	
-	
-	
-	
+
 	
 }

@@ -136,17 +136,56 @@ public class MainController extends Print {
 
 	private View adminTicketDelete() {
 		if (debug) System.out.println("=========이용권 삭제=========");
+		System.out.println();
 		
+		List<Object> param = new ArrayList<Object>();
 		
-		return null;
+		int no = ScanUtil.nextInt("이용권 번호 : ");
+		
+		param.add(no);
+		
+		System.out.println();
+		System.out.println("정말 삭제하시겠습니까?");
+		System.out.println();
+		int sel = ScanUtil.nextInt("1. 삭제\t2. 취소");
+		
+		if (sel == 1) {
+			int result = adminService.adminTicketDelete(param);
+			if (result == 1) {
+				System.out.println();
+				System.out.println("이용권 삭제를 성공했습니다.");
+				System.out.println();
+				return View.ADMIN_TICKET;
+			}
+		} else if (sel == 2) {
+			System.out.println();
+			System.out.println("이용권 삭제를 취소했습니다.");
+			System.out.println();
+			return View.ADMIN_TICKET;
+		}
+		
+		return View.ADMIN_TICKET;
 	}
 
 	
 	private View adminTicketUpdate() {
 		if (debug) System.out.println("=========이용권 수정=========");
+		System.out.println();
 		
+		int no = ScanUtil.nextInt("이용권 번호 : ");
+		String name = ScanUtil.nextLine("이용권명 : ");
+		int price = ScanUtil.nextInt("이용권 가격 : ");
+		String comment = ScanUtil.nextLine("이용권 설명 : ");
 		
-		return null;
+		List<Object> param = new ArrayList<Object>();
+		param.add(name);
+		param.add(price);
+		param.add(comment);
+		param.add(no);
+		
+		adminService.adminTicketUpdate(param);
+		
+		return View.ADMIN_TICKET;
 	}
 
 	
@@ -155,14 +194,16 @@ public class MainController extends Print {
 		
 		String name = ScanUtil.nextLine("이용권명 : ");
 		int price = ScanUtil.nextInt("이용권 가격 : ");
+		String comment = ScanUtil.nextLine("이용권 설명 : ");
 		
 		List<Object> param = new ArrayList<Object>();
 		param.add(name);
 		param.add(price);
+		param.add(comment);
 		
 		adminService.adminTicketInsert(param);
 		
-		return null;
+		return View.ADMIN_TICKET;
 	}
 
 	
@@ -174,12 +215,13 @@ public class MainController extends Print {
 		System.out.println("2. 이용권 수정");
 		System.out.println("3. 이용권 삭제");
 		System.out.println("4. 뒤로가기");
+		System.out.println();
 		
 		int sel = ScanUtil.nextInt("메뉴 : ");
 		
 		if (sel==1) return View.ADMIN_TICKET_INSERT;
 		else if (sel==2) return View.ADMIN_TICKET_UPDATE;
-		else if (sel==3) return View.ADMIN_NOTICE_DELETE;
+		else if (sel==3) return View.ADMIN_TICKET_DELETE;
 		else if (sel==4) return View.ADMIN;
 		else return View.ADMIN;
 	}
@@ -190,16 +232,16 @@ public class MainController extends Print {
 		
 		List<Map<String, Object>> param = adminService.tichetList();
 		
-		System.out.println("============이용권 안내 [1개월 이용시 금액 (VAT 포함)]=============");
+		System.out.println("===========================이용권 안내 [1개월 이용시 금액 (VAT 포함)]===============================");
 		for (Map<String, Object> map : param) {
 			BigDecimal no = (BigDecimal)map.get("TIC_NO");
 			String tier = (String)map.get("TIC_TIER");
 			String price = (String)map.get("TIC_PRICE");
 			String comment = (String)map.get("TIC_COMMENT");
-			System.out.println("| No."+no+" "+tier+"\t   [가격]"+price+"원    [설명] "+comment+"  |");
+			System.out.println(" No."+no+" "+tier+"\t [가격]"+price+"원    [설명] "+comment);
 		}
-		System.out.println(" =======================================================");
-		
+		System.out.println("========================================================================================");
+
 		return View.ADMIN_TICKET;
 	}
 

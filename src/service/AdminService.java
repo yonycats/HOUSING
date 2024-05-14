@@ -40,8 +40,23 @@ public class AdminService {
 		return adminDao.daySaleTotal(param);
 	}
 
+	
 	public List<Map<String, Object>> tichetList() {
 		return adminDao.tichetList();
+	}
+
+	
+	public void adminTicketInsert(List<Object> param) {
+		adminDao.adminTicketInsert(param);
+	}
+	
+
+	public void adminTicketUpdate(List<Object> param) {
+		adminDao.adminTicketUpdate(param);
+	}
+
+	public int adminTicketDelete(List<Object> param) {
+		return adminDao.adminTicketDelete(param);
 	}
 	
 	
