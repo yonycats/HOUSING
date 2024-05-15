@@ -48,14 +48,14 @@ public class MainController extends Print {
 			case MEMBER:
 				view = member();
 				break;
-			case NOTICE_LIST:
-				view = noticeList();
-				break;
 			case MYINFO:
 				view = myInfo();
 				break;
 			case ADMIN_NOTICE:
 				view = adminNotice();
+				break;
+			case NOTICE_LIST:
+				view = noticeList();
 				break;
 			case ADMIN_NOTICE_INSERT:
 				view = adminNoticeInsert();
@@ -66,12 +66,21 @@ public class MainController extends Print {
 			case ADMIN_NOTICE_DELETE:
 				view = adminNoticeDelete();
 				break;
-//			case ADMIN_REPORT:
-//				view = adminReport();
-//				break;
-//			case ADMIN_TICKET:
-//				view = adminTicket();
-//				break;
+			case ADMIN_REPORT:
+				view = adminReport();
+				break;
+			case ADMIN_REPORT_LIST:
+				view = adminReportList();
+				break;
+			case ADMIN_REPORT_DETAIL:
+				view = adminReportDetail();
+				break;
+			case ADMIN_REPORT_DOING:
+				view = adminReportDoing();
+				break;
+			case ADMIN_REPORT_FINISH:
+				view = adminReportFinish();
+				break;
 			case ADMIN_SALE:
 				view = adminSale();
 				break;
@@ -105,18 +114,6 @@ public class MainController extends Print {
 			case MEMBER_DELETE:
 				view = memberDelete();
 				break;
-//			case MEMBER_MYESTLIST:
-//				view = memberMyEstList();
-//				break;
-//			case MEMBER_REVIEW:
-//				view = memberReview();
-//				break;
-//			case MEMBER_MYSALELIST:
-//				view = memberMySaleList();
-//				break;
-//			case MEMBER_WISHLIST:
-//				view = memberWishList();
-//				break;
 //			case MEMBER_REPORT:
 //				view = memberReport();
 //				break;
@@ -132,8 +129,65 @@ public class MainController extends Print {
 		}
 	}
 
+	
+	private View adminReportFinish() {
+		if (debug) System.out.println("=========처리완료 신고 목록=========");
+		System.out.println();
+		
+		return View.ADMIN_REPORT;
+	}
 
+	
+	private View adminReportDoing() {
+		if (debug) System.out.println("=========미처리 신고 목록=========");
+		System.out.println();
+		
+		return View.ADMIN_REPORT;
+	}
 
+	
+	private View adminReportDetail() {
+		if (debug) System.out.println("=========신고 상세보기=========");
+		System.out.println();
+		
+		return View.ADMIN_REPORT;
+	}
+	
+	
+	private View adminReportList() {
+		System.out.println();
+		
+		List<Map<String, Object>> param = adminService.adminReportList();
+		
+		int no = param.get("RPT_NO");
+		
+		return View.ADMIN_REPORT;
+	}
+
+	
+	private View adminReport() {
+		if (debug) System.out.println("=========신고 관리=========");
+		System.out.println();
+
+		adminReportList();
+		
+		System.out.println("1. 전체 신고 목록");
+		System.out.println("2. 미처리 신고 목록");
+		System.out.println("3. 처리완료 신고 목록");
+		System.out.println("4. 뒤로가기");
+		
+		System.out.println();
+		
+		int sel = ScanUtil.menu();
+		
+		if (sel==1) return View.ADMIN_REPORT_LIST;
+		else if (sel==2) return View.ADMIN_REPORT_DOING;
+		else if (sel==3) return View.ADMIN_REPORT_FINISH;
+		else if (sel==4) return View.ADMIN;
+		else return View.ADMIN;
+	}
+
+	
 	private View adminTicketDelete() {
 		if (debug) System.out.println("=========이용권 삭제=========");
 		System.out.println();
@@ -246,6 +300,27 @@ public class MainController extends Print {
 	}
 
 	
+//	private View adminSaleDay() {
+//		if (debug) System.out.println("=========일 매출 내역=========");
+//		System.out.println();
+//		
+//		System.out.println("매출 조회를 원하는 날짜를 입력하세요.");
+//		String year = ScanUtil.nextLine("연도 : ");
+//		String month = ScanUtil.nextLine("월 : ");
+//		String day = ScanUtil.nextLine("일 : ");
+//		String dates = year+month+day;
+//		
+//		List<Object> param = new ArrayList<Object>();
+//		param.add(dates);
+//		List<Map<String, Object>> date = adminService.daySaleTotal(param);
+//		
+//		prints(date);
+//		
+//		System.out.println();
+//		return View.ADMIN_SALE;
+//	}
+	
+	
 	private View adminSaleDay() {
 		if (debug) System.out.println("=========일 매출 내역=========");
 		System.out.println();
@@ -255,30 +330,24 @@ public class MainController extends Print {
 		String month = ScanUtil.nextLine("월 : ");
 		String day = ScanUtil.nextLine("일 : ");
 		
+		if (month.equals("1") || month.equals("2") || month.equals("3") || month.equals("4") || month.equals("5")
+				 || month.equals("6") || month.equals("7") || month.equals("8") || month.equals("9")) {
+			String month1 = "0"+month;
+			month = month1;
+		}
+		if (day.equals("1") || day.equals("2") || day.equals("3") || day.equals("4") || day.equals("5")
+				 || day.equals("6") || day.equals("7") || day.equals("8") || day.equals("9")) {
+			String day1 = "0"+day;
+			day = day1;
+		}
+		String dates = year+month+day;
+		
 		List<Object> param = new ArrayList<Object>();
-		param.add(year);
-		param.add(month);
-		param.add(day);
+		param.add(dates);
+		Map<String, Object> date = adminService.daySaleTotal(param);
 		
-//		if (month.equals("1") || month.equals("2") || month.equals("3") || month.equals("4") || month.equals("5")
-//				 || month.equals("6") || month.equals("7") || month.equals("8") || month.equals("9")) {
-//			String month1 = "0"+month;
-//			date.add(month1);
-//		} else date.add(month);
-//		
-//		if (day.equals("1") || day.equals("2") || day.equals("3") || day.equals("4") || day.equals("5")
-//				 || day.equals("6") || day.equals("7") || day.equals("8") || day.equals("9")) {
-//			String day1 = "0"+day;
-//			date.add(day1);
-//		} else date.add(day);
-		
-		Map<String, Object> date = (Map<String, Object>)adminService.daySaleTotal(param);
-		String daySaleTotal = (String)date.get("PRICE");
-		
-		
-		System.out.println("[ "+year+"년  "+month+"월  "+day+"일  매출 ] "+daySaleTotal+"원");
-
-		
+		String price = (String) date.get("PRICE");
+		System.out.println("[ "+year+"년  "+month+"월  "+day+"일  매출 ] "+price+"원");
 		
 		System.out.println();
 		return View.ADMIN_SALE;
@@ -460,7 +529,7 @@ public class MainController extends Print {
 		else if (sel==2) return View.ADMIN_NOTICE_UPDATE;
 		else if (sel==3) return View.ADMIN_NOTICE_DELETE;
 		else if (sel==4) return View.ADMIN;
-		else return View.HOME;
+		else return View.ADMIN;
 	}
 
 	

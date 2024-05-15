@@ -38,13 +38,24 @@ public class AdminDao {
 				"FROM (SELECT SAL_DATE, S.TIC_TIER, T.TIC_PRICE\r\n" + 
 				"    FROM SALELIST S, TICKET T\r\n" + 
 				"    WHERE S.TIC_TIER = T.TIC_TIER \r\n" + 
-				"        AND SUBSTR(SAL_DATE,1,4) = ?\r\n" + 
-				"        AND SUBSTR(SAL_DATE,6,2) = ?\r\n" + 
-				"        AND SUBSTR(SAL_DATE,9,2) = ?) P"; 
+				"        AND SAL_DATE = ?) P"; 
 		
 		return jdbc.selectOne(sql, param);
 	}
 
+	
+//	public List<Map<String, Object>> daySaleTotal(List<Object> param) {
+//		String sql = "SELECT TO_CHAR(P.SAL_DATE) SAL_DATE, TO_CHAR(SUM(P.TIC_PRICE), '999,999,999') PRICE\r\n" + 
+//				"FROM (SELECT SAL_DATE, S.TIC_TIER, T.TIC_PRICE\r\n" + 
+//				"    FROM SALELIST S, TICKET T\r\n" + 
+//				"    WHERE S.TIC_TIER = T.TIC_TIER \r\n" + 
+//				"        AND SAL_DATE = ? P\r\n" + 
+//				"GROUP BY SAL_DATE"; 
+//		
+//		return jdbc.selectList(sql, param);
+//	}
+	
+	
 	public List<Map<String, Object>> tichetList() {
 		String sql = " SELECT TIC_NO, TIC_TIER, TO_CHAR(TIC_PRICE, '999,999,999') TIC_PRICE, TIC_COMMENT\r\n" + 
 				"FROM TICKET\r\n" + 

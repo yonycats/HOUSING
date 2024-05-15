@@ -39,6 +39,11 @@ public class AdminService {
 	public Map<String, Object> daySaleTotal(List<Object> param) {
 		return adminDao.daySaleTotal(param);
 	}
+	
+	
+//	public List<Map<String, Object>> daySaleTotal(List<Object> param) {
+//		return adminDao.daySaleTotal(param);
+//	}
 
 	
 	public List<Map<String, Object>> tichetList() {
@@ -55,6 +60,7 @@ public class AdminService {
 		adminDao.adminTicketUpdate(param);
 	}
 
+	
 	public int adminTicketDelete(List<Object> param) {
 		return adminDao.adminTicketDelete(param);
 	}
