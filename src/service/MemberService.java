@@ -115,6 +115,10 @@ public class MemberService {
 		if(memberDao.wishlistChk(param)==null)return true;
 		else return false;
 	}
+
+	public int memberReport(List<Object> param) {
+		return memberDao.memberReport(param);
+	}
 	
 	
 }

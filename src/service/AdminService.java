@@ -109,6 +109,10 @@ public class AdminService {
 	public List<Map<String, Object>> yearSaleTier(List<Object> param) {
 		return adminDao.yearSaleTier(param);
 	}
+
+	public Map<String, Object> noticeListDetail(List<Object> param) {
+		return adminDao.noticeListDetail(param);
+	}
 	
 	
 }

@@ -31,9 +31,8 @@ public class MemberDao {
 		return jdbc.selectOne(sql, param);
 	}
 	
-	
 	public void sign(List<Object> param) {
-		String sql = " INSERT INTO JAVA_MEMBER (MEM_NO, MEM_ID, MEM_PW, MEM_NAME, MEM_DELYN)\r\n" + 
+		String sql = " INSERT INTO MEMBER (MEM_NO, MEM_ID, MEM_PW, MEM_NAME, MEM_DELYN)\r\n" + 
 					 "VALUES ((SELECT NVL(MAX(MEM_NO), 0)+1 FROM MEMBER), ?, ?, ?, 'N')";
 		
 		jdbc.update(sql, param);
@@ -48,7 +47,6 @@ public class MemberDao {
 		jdbc.update(sql, param);
 	}
 
-	
 	public Map<String, Object> memInfo() {
 		String sql = " SELECT MEM_PW, MEM_NAME, MEM_TEL, MEM_ADDRESS, MEM_NICKNAME, MEM_BANK, TIC_TIER, MEM_RPTCNT\r\n" + 
 				"FROM MEMBER \r\n" + 
@@ -100,6 +98,7 @@ public class MemberDao {
 				"VALUES((SELECT NVL(MAX(REV_NO),0)+1 FROM REVIEW),?,?,SYSDATE,?,?)";
 		jdbc.update(sql, param);
 	}
+	
 	public Map<String, Object> wishListDetail(List<Object> param) {
 		String sql="";
 		return jdbc.selectOne(sql,param);
@@ -167,6 +166,12 @@ public class MemberDao {
 				"WHERE MEM_ID=?\r\n" + 
 				"AND EST_NO=?";
 		return jdbc.selectOne(sql, param);
+	}
+
+	public int memberReport(List<Object> param) {
+		String sql = " ";
+	
+	return jdbc.update(sql, param);
 	}
 	
 }

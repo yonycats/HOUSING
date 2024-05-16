@@ -9,7 +9,6 @@ import java.util.Map;
 import service.AdminService;
 import service.EstateService;
 import service.MemberService;
-import service.NoticeService;
 import service.RealtorService;
 import util.ScanUtil;
 import util.View;
@@ -63,6 +62,9 @@ public class MainController extends Print {
 				break;
 			case NOTICE_LIST:
 				view = noticeList();
+				break;
+			case NOTICE_LIST_DETAIL:
+				view = noticeListDetail();
 				break;
 			case ADMIN_NOTICE_INSERT:
 				view = adminNoticeInsert();
@@ -118,6 +120,9 @@ public class MainController extends Print {
 			case ADMIN_TICKET_DELETE:
 				view = adminTicketDelete();
 				break;
+			case MEMBER_REPORT:
+				view = memberReport();
+				break;
 			case MEMBER_DETAIL:
 				view = memberDetail();
 				break;
@@ -139,9 +144,9 @@ public class MainController extends Print {
 			case WISHLIST_INSERT:
 				view = wishListInsert();
 				break;
-//			case MEMBER_REPORT:
-//				view = memberReport();
-//				break;
+			case MEMBER_REPORTINSERT:
+				view = memberReportInsert();
+				break;
 			case EST_LIST:
 				view = estList();
 				break;
@@ -175,13 +180,77 @@ public class MainController extends Print {
 			case REVIEW_UPDATE:
 				view = reviewUpdate();
 				break;
-
+			case RET_REVIEWLIST:
+				view = retReviewList();
+				break;
 			default:
 				break;
 			}
 		}
 	}
 
+
+	private View memberReport() {
+		if (debug) System.out.println("=========매물 신고하기=========");
+		System.out.println();
+		
+		List<Object> param = new ArrayList<Object>();
+		
+		int no = ScanUtil.nextInt("매물 번호 : ");
+		
+		param.add(no);
+		
+		System.out.println();
+		System.out.println("정말 신고하시겠습니까?");
+		System.out.println();
+		int sel = ScanUtil.nextInt("1. 신고\t2. 취소");
+		
+		if (sel == 1) {
+			int result = memberService.memberReport(param);
+			if (result == 1) {
+				System.out.println();
+				System.out.println("신고를 성공했습니다.");
+				System.out.println();
+				return View.MEMBER;
+			}
+		} else if (sel == 2) {
+			System.out.println();
+			System.out.println("신고를 취소했습니다.");
+			System.out.println();
+			return View.MEMBER;
+		}
+		
+		return View.MEMBER;
+	}
+
+	
+	private View retReviewList() {
+		if (debug) System.out.println("=========나에 대한 리뷰 목록=========");
+		System.out.println();
+		
+		Map<String, Object> realtor = (Map<String, Object>) sessionStorage.get("realtor");
+		List<Object> param = new ArrayList<Object>();
+	    String id = (String) realtor.get("RET_ID");
+	    param.add(id);
+	    
+	    List<Map<String, Object>> param1 = realtorService.retReviewList(param);
+	    Map<String, Object> param2 = realtorService.retReviewScore(param);
+		
+	    BigDecimal scoreAvg = (BigDecimal)param2.get("평균평점");
+	    System.out.println("[나의 리뷰 평균평점] \t\t"+scoreAvg+"점");
+	    System.out.println();
+	    
+	    for (Map<String, Object> map : param1) {
+		    BigDecimal no = (BigDecimal)map.get("REV_NO");
+		    String date = (String)map.get("REV_DATE");
+		    BigDecimal score = (BigDecimal)map.get("REV_SCORE");
+		    String content = (String)map.get("REV_CONTENT");
+		    System.out.println("No."+no+" \t[작성일] "+date+"    [별점] "+score+"    [리뷰내용] "+content);
+		}
+	    System.out.println();
+	    
+		return View.REALTOR;
+	}
 
 	private View wishListInsert() {
 		int estNo = (int) sessionStorage.get("estNo");
@@ -193,7 +262,7 @@ public class MainController extends Print {
 		boolean wishlistChk=false;
 		wishlistChk=memberService.wishlistChk(param);
 		if(wishlistChk)memberService.wishListInsert(param);
-		else System.out.println("찜목록에 이미 있습니다.");
+		else System.out.println("찜 목록에 이미 있습니다.");
 		return View.EST_DETAIL;
 	}
 
@@ -327,6 +396,15 @@ public class MainController extends Print {
 		return View.REVIEW;
 	}
 
+	private View memberReportInsert() {
+		if (debug) System.out.println("=========매물 신고하기=========");
+		System.out.println();
+		
+		
+		
+		return View.MEMBER;
+	}
+	
 	private View adminReportEst() {
 		if (debug) System.out.println("=========매물 신고 상세보기=========");
 		System.out.println();
@@ -602,9 +680,9 @@ public class MainController extends Print {
 			String tier = (String)map.get("TIC_TIER");
 			String price = (String)map.get("TIC_PRICE");
 			String comment = (String)map.get("TIC_COMMENT");
-			System.out.println(" No."+no+" "+tier+"\t [가격]"+price+"원    [설명] "+comment);
+			System.out.println("  No."+no+" "+tier+"\t [가격]"+price+"원    [설명] "+comment);
 		}
-		System.out.println("========================================================================================");
+		System.out.println("=========================================================================================");
 
 		return View.ADMIN_TICKET;
 	}
@@ -614,6 +692,7 @@ public class MainController extends Print {
 		System.out.println();
 		
 		System.out.println("매출 조회를 원하는 날짜를 입력하세요.");
+		System.out.println();
 		String year = ScanUtil.nextLine("연도 : ");
 		
 		String date1 = year+"0101";
@@ -653,6 +732,7 @@ public class MainController extends Print {
 		System.out.println();
 		
 		System.out.println("매출 조회를 원하는 날짜를 입력하세요.");
+		System.out.println();
 		String year = ScanUtil.nextLine("연도 : ");
 		String month = ScanUtil.nextLine("월 : ");
 		
@@ -698,6 +778,7 @@ public class MainController extends Print {
 		System.out.println();
 		
 		System.out.println("매출 조회를 원하는 날짜를 입력하세요.");
+		System.out.println();
 		String year = ScanUtil.nextLine("연도 : ");
 		String month = ScanUtil.nextLine("월 : ");
 		String day = ScanUtil.nextLine("일 : ");
@@ -718,7 +799,7 @@ public class MainController extends Print {
 		param.add(dates);
 		Map<String, Object> date = adminService.adminSaleDay(param);
 		
-		if (date.get("TIC_PRICE")==null) {
+		if (date.get("PRICE")==null) {
 			System.out.println();
 			System.out.println("해당 날짜의 판매내역이 없습니다.");
 			System.out.println();
@@ -727,7 +808,7 @@ public class MainController extends Print {
 		
 		String price = (String) date.get("PRICE");
 		System.out.println();
-		System.out.println("[ "+year+"년  "+month+"월  "+day+"일  총매출 ] \t\t"+price+"원");
+		System.out.println("[ "+year+"년  "+month+"월  "+day+"일  총매출 ] \t"+price+"원");
 		System.out.println();
 		
 		List<Map<String, Object>> tier = adminService.daySaleTier(param);
@@ -744,6 +825,7 @@ public class MainController extends Print {
 
 	private View adminSale() {
 		if (debug) System.out.println("=========매출 관리=========");
+		System.out.println();
 		
 		System.out.println("1. 일 매출 조회");
 		System.out.println("2. 월 매출 조회");
@@ -893,6 +975,36 @@ public class MainController extends Print {
 		return View.ADMIN_NOTICE;
 	}
 
+	private View noticeListDetail() {
+		if (debug) System.out.println("=========공지 상세보기=========");
+		System.out.println();
+		
+		List<Object> param = new ArrayList<Object>();
+		int sel = ScanUtil.nextInt("번호 선택 : ");
+		param.add(sel);
+		
+		Map<String, Object> ReportDetail = adminService.noticeListDetail(param);
+		
+		BigDecimal no = (BigDecimal)ReportDetail.get("RPT_NO");
+		String date = (String)ReportDetail.get("RPT_DATE");
+		String title = (String)ReportDetail.get("RPT_TITLE");
+		String content = (String)ReportDetail.get("RPT_CONTENT");
+		
+		System.out.println("No."+no+"\t\t[작성일] "+date+"\t[제목] ");
+		System.out.println("[공지내용] "+content);
+		System.out.println();
+		
+		if (sessionStorage.containsKey("member")) {
+			return View.MEMBER;
+		}
+		else if (sessionStorage.containsKey("realtor")) {
+			return View.REALTOR;
+		} 
+		else if (sessionStorage.containsKey("admin") || (sessionStorage.containsKey(null))) {
+			return View.ADMIN_NOTICE;
+		} else return View.HOME;
+	}
+	
 	private View noticeList() {
 		System.out.println();
 		List<Map<String, Object>> param = adminService.noticeList();
@@ -902,10 +1014,21 @@ public class MainController extends Print {
 			String date = (String)map.get("NTC_DATE");
 			String title = (String)map.get("NTC_TITLE");
 			String content = (String)map.get("NTC_CONTENT");
-			System.out.println("No."+no+"\t[등록일] "+date+"   "+title+"    \t [내용] "+content);
+			System.out.println("No."+no+"\t[등록일] "+date+"   "+title);
+			System.out.println("[내용] "+content);
+			System.out.println();
 		}	
 		System.out.println();
-		return View.HOME;
+		
+		if (sessionStorage.containsKey("member")) {
+			return View.MEMBER;
+		}
+		else if (sessionStorage.containsKey("realtor")) {
+			return View.REALTOR;
+		} 
+		else if (sessionStorage.containsKey("admin") || (sessionStorage.containsKey(null))) {
+			return View.HOME;
+		} else return View.HOME;
 	}
 
 	private View adminNotice() {
@@ -1229,8 +1352,16 @@ public class MainController extends Print {
 			int estNo = ScanUtil.nextInt("매물 번호입력: ");
 			sessionStorage.put("estNo", estNo);
 			return View.EST_DETAIL;
-		} else
-			return View.EST_LIST;
+		}
+		
+		
+		if (sessionStorage.containsKey("member")) {
+			return View.MEMBER;
+		}
+		else if (sessionStorage.containsKey("realtor")) {
+			return View.REALTOR;
+		}
+		else return View.EST_LIST;
 	}
 
 	private View memberDetail() {
@@ -1248,35 +1379,7 @@ public class MainController extends Print {
 		else if (sel == 4) return View.MEMBER;
 		else return View.MEMBER;
 	}
-	
-	private View member() {
-		if (debug) System.out.println("=========일반회원 페이지=========");
-		System.out.println();
 
-		System.out.println("1. 회원 정보 \t2. 내 매물 정보\t3. 리뷰 관리\t4. 예약 목록\t5. 찜 목록");
-		System.out.println("6. 매물 등록\t7. 신고\t\t8. 홈\t\t9. 로그아웃");
-		System.out.println();
-		
-		int sel = ScanUtil.menu();
-
-		if (sel == 1) return View.MYINFO;
-		else if (sel == 2) return View.MEMBER_MYESTLIST;
-		else if (sel == 3) return View.MEMBER_REVIEW;
-		else if (sel == 4) return View.MEMBER_RESERVATIONLIST;
-		else if (sel == 5) return View.MEMBER_WISHLIST;
-		else if (sel == 6) return View.EST_ADD;
-		else if (sel == 7) return View.MEMBER_REPORT;
-		else if (sel == 8) return View.HOME;
-		else if (sel == 9) {
-			sessionStorage.remove("admin");
-			System.out.println("로그아웃이 완료되었습니다.");
-			System.out.println();
-			return View.HOME;
-		}
-		else return View.ADMIN;
-		
-	}
-	
 	private View adminLogin() {
 		if (debug) System.out.println("=========관리자 로그인 페이지=========");
 		System.out.println();
@@ -1356,10 +1459,58 @@ public class MainController extends Print {
 	   }
 	
 	private View realtor() {
-		// TODO Auto-generated method stub
-		return null;
+		if (debug) System.out.println("=========공인중개사 페이지=========");
+		System.out.println();
+
+		System.out.println("1. 공지사항\t2.전체 매물 목록보기\t3. 내 매물 등록\t4. 내 매물 정보\t5. 회원 정보");
+		System.out.println("6. 리뷰 보기\t7. 예약 목록\t8. 로그아웃");
+		System.out.println();
+		
+		int sel = ScanUtil.menu();
+
+		if (sel == 1) return View.NOTICE_LIST;
+		else if (sel == 2) return View.EST_LIST;
+		else if (sel == 3) return View.EST_ADD;
+		else if (sel == 4) return View.MEMBER_MYESTLIST;
+		else if (sel == 5) return View.MYINFO;
+		else if (sel == 6) return View.RET_REVIEWLIST;
+		else if (sel == 7) return View.MEMBER_RESERVATIONLIST;
+		else if (sel == 8) {
+			sessionStorage.remove("admin");
+			System.out.println("로그아웃이 완료되었습니다.");
+			System.out.println();
+			return View.HOME;
+		}
+		else return View.REALTOR;
 	}
 
+	private View member() {
+		if (debug) System.out.println("=========일반회원 페이지=========");
+		System.out.println();
+
+		System.out.println("1. 공지사항\t2.전체 매물 목록보기\t3. 내 매물 등록\t4. 내 매물 정보\t5. 회원 정보");
+		System.out.println("6. 리뷰 관리\t7. 예약 목록\t8. 찜 목록\t9. 로그아웃");
+		System.out.println();
+		
+		int sel = ScanUtil.menu();
+
+		if (sel == 1) return View.NOTICE_LIST;
+		else if (sel == 2) return View.EST_LIST;
+		else if (sel == 3) return View.EST_ADD;
+		else if (sel == 4) return View.MEMBER_MYESTLIST;
+		else if (sel == 5) return View.MYINFO;
+		else if (sel == 6) return View.MEMBER_REVIEW;
+		else if (sel == 7) return View.MEMBER_RESERVATIONLIST;
+		else if (sel == 8) return View.MEMBER_WISHLIST;
+		else if (sel == 9) {
+			sessionStorage.remove("admin");
+			System.out.println("로그아웃이 완료되었습니다.");
+			System.out.println();
+			return View.HOME;
+		}
+		else return View.MEMBER;
+	}
+	
 	private View sign() {
 		printSignList();
 		int sel = ScanUtil.menu();
@@ -1368,9 +1519,7 @@ public class MainController extends Print {
 		String id;
 		while (true) {
 			int cnt = 0;
-
 			id = ScanUtil.nextLine("회원 id입력:");
-
 			for (Map<String, Object> map : realtorData) {
 				if (map.get("RET_ID").equals(id)) {
 					System.out.println("이미 존재하는 ID");
@@ -1387,36 +1536,53 @@ public class MainController extends Print {
 			}
 			if (cnt == 0)
 				break;
-
 		}
 		String pw = ScanUtil.nextLine("회원 pw입력:");
 		String name = ScanUtil.nextLine("회원 이름 입력:");
 		String tel = ScanUtil.nextLine("회원 전화번호 입력:");
 		String address = ScanUtil.nextLine("회원 주소입력:");
-		String nickName = ScanUtil.nextLine("회원 닉네임 입력:");
 		List<Object> param = new ArrayList<Object>();
 		param.add(id);
 		param.add(pw);
 		param.add(name);
 		param.add(tel);
 		param.add(address);
-		param.add(nickName);
+		int comNo = 0;
+		String nickName = null;
 		if (sel == 2) {
-			String comName = ScanUtil.nextLine("공인중개소 이름 입력: ");
-			String comtel = ScanUtil.nextLine("공인중개소 전화번호 입력: ");
-			String comAddress = ScanUtil.nextLine("공인중개소 주소: ");
-			String comComent = ScanUtil.nextLine("공인중개소 소개: ");
-			param.add(comName);
-			param.add(comtel);
-			param.add(comAddress);
-			param.add(comComent);
+			List<Map<String, Object>> comList = realtorService.comList();
+			for (Map<String, Object> map : comList) {
+				System.out.println(map);
+			}
+			int sel2 = ScanUtil.nextInt("이중에 당신의 공인중개사가 있나요?(1.네,2.아니오(공인중개사 새로만들기)): ");
+			if (sel2 == 1) {
+				comNo = ScanUtil.nextInt("공인중개소 번호 입력: ");
+			} else if (sel2 == 2) {
+				String comName = ScanUtil.nextLine("공인중개소 이름 입력: ");
+				String comtel = ScanUtil.nextLine("공인중개소 전화번호 입력: ");
+				String comAddress = ScanUtil.nextLine("공인중개소 주소: ");
+				String comComent = ScanUtil.nextLine("공인중개소 소개: ");
+				List<Object> param2 = new ArrayList<Object>();
+				param2.add(comName);
+				param2.add(comtel);
+				param2.add(comAddress);
+				param2.add(comComent);
+				realtorService.companyInsert(param2);
+				List<Map<String, Object>> comList2 = realtorService.comList();
+				for (Map<String, Object> map : comList2) {
+					System.out.println(map);
+				}
+				comNo = ScanUtil.nextInt("공인중개소 번호 입력: ");
+			}
+			param.add(comNo);
 			realtorService.sign(param);
 
 		} else if (sel == 1)
-			memberService.sign(param);
+			nickName = ScanUtil.nextLine("회원 닉네임 입력:");
+		param.add(nickName);
+		memberService.sign(param);
 		System.out.println("회원가입 완료");
 		return View.HOME;
-
 	}
 
 	private View login() {
@@ -1462,7 +1628,7 @@ public class MainController extends Print {
 				return View.ADMIN;
 			}
 		}
-		return null;
+		return View.LOGIN;
 	}
 
 	private View admin() {
@@ -1497,25 +1663,25 @@ public class MainController extends Print {
 		if (debug) System.out.println("==========홈==========");
 		System.out.println();
 
-		System.out.println("1. 집 매물 정보 보기");
-		System.out.println("2. 집 매물 등록하기");
-		System.out.println("3. 로그인");
-		System.out.println("4. 회원가입");
-		System.out.println("5. 공지사항");
+		System.out.println("1. 공지사항");
+		System.out.println("2. 집 매물 정보보기");
+		System.out.println("3. 집 매물 등록하기");
+		System.out.println("4. 로그인");
+		System.out.println("5. 회원가입");
 		System.out.println();
 
 		int sel = ScanUtil.menu();
 
 		if (sel == 1)
-			return View.EST_LIST;
-		else if (sel == 2)
-			return View.EST_ADD;
-		else if (sel == 3)
-			return View.LOGIN;
-		else if (sel == 4)
-			return View.SIGN;
-		else if (sel == 5)
 			return View.NOTICE_LIST;
+		else if (sel == 2)
+			return View.EST_LIST;
+		else if (sel == 3)
+			return View.EST_ADD;
+		else if (sel == 4)
+			return View.LOGIN;
+		else if (sel == 5)
+			return View.SIGN;
 		else if (sel == 0)
 			return View.ADMINLOGIN;
 		return View.HOME;

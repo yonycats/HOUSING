@@ -103,14 +103,13 @@ public class AdminDao {
 	
 	public List<Map<String, Object>> noticeList() {
 		String sql = " SELECT NTC_NO, TO_CHAR(NTC_DATE, 'YYYY.MM.DD') NTC_DATE, \r\n" + 
-					 "       SUBSTR(NTC_TITLE,1,20) NTC_TITLE, SUBSTR(NTC_CONTENT,1,25) NTC_CONTENT\r\n" + 
+					 "       SUBSTR(NTC_TITLE,1,30) NTC_TITLE, SUBSTR(NTC_CONTENT,1,50) NTC_CONTENT\r\n" + 
 					 "FROM NOTICE\r\n" + 
 					 "ORDER BY NTC_NO DESC";
 
 		return jdbc.selectList(sql);
 	}
 
-	
 	public void adminNoticeInsert(List<Object> param) {
 		String sql = " INSERT INTO NOTICE (NTC_NO, NTC_TITLE, NTC_CONTENT, NTC_DATE)\r\n" + 
 				"VALUES ((SELECT NVL(MAX(NTC_NO),0)+1 FROM NOTICE), ?, ?, SYSDATE)";
@@ -118,7 +117,6 @@ public class AdminDao {
 		jdbc.update(sql, param);
 	}
 
-	
 	public void adminNoticeUpdate(List<Object> param) {
 		String sql = " UPDATE NOTICE\r\n" + 
 					 "SET NTC_TITLE = ?, NTC_CONTENT = ?\r\n" + 
@@ -183,7 +181,6 @@ public class AdminDao {
 		return jdbc.selectList(sql, param);
 	}
 	
-
 	public Map<String, Object> adminSaleYear(List<Object> param) {
 		String sql = " SELECT TO_CHAR(SUM(P.TIC_PRICE),'999,999,999') TIC_PRICE\r\n" + 
 					 "FROM (SELECT SAL_DATE, S.TIC_TIER, T.TIC_PRICE\r\n" + 
@@ -209,6 +206,14 @@ public class AdminDao {
 					 "ORDER BY P.TIC_NO";
 	
 		return jdbc.selectList(sql, param);
+	}
+
+	public Map<String, Object> noticeListDetail(List<Object> param) {
+		String sql = " SELECT NTC_NO, TO_CHAR(NTC_DATE, 'YYYY.MM.DD') NTC_DATE, NTC_TITLE, NTC_CONTENT\r\n" + 
+				"FROM NOTICE\r\n" + 
+				"WHERE NTC_NO = ?";
+
+	return jdbc.selectOne(sql, param);
 	}
 	
 	

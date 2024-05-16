@@ -52,6 +52,14 @@ public class RealtorService {
 		return realtorDao.list(param);
 	}
 
+	public List<Map<String, Object>> comList() {
+		return realtorDao.comList();
+	}
+	
+	public void companyInsert(List<Object> param) {
+		realtorDao.companyInsert(param);
+	}
+	
 	public List<Map<String, Object>> myEstList(List<Object> param) {
 		return realtorDao.myEstList(param);
 	}
@@ -70,6 +78,14 @@ public class RealtorService {
 
 	public void estStateUpdate(List<Object> param) {
 		realtorDao.estStateUpdate(param);
+	}
+
+	public List<Map<String, Object>> retReviewList(List<Object> param) {
+		return realtorDao.retReviewList(param);
+	}
+
+	public Map<String, Object> retReviewScore(List<Object> param) {
+		return realtorDao.retReviewScore(param);
 	}
 
 }

@@ -55,6 +55,19 @@ public class RealtorDao {
 		return jdbc.selectList(sql,param);
 	}
 
+	public List<Map<String, Object>> comList() {
+		String sql="SELECT COM_NO, COM_NAME FROM COMPANY\r\n" + 
+				"WHERE COM_DELYN='N'"
+				+ "ORDER BY COM_NAME";
+		return jdbc.selectList(sql);
+	}
+
+	public void companyInsert(List<Object> param) {
+		String sql="INSERT INTO COMPANY\r\n" + 
+				"VALUES((SELECT NVL(MAX(COM_NO),0)+1 FROM COMPANY),?,?,?,?,'N')";
+		jdbc.update(sql, param);
+	}
+	
 	public List<Map<String, Object>> myEstList(List<Object> param) {
 		String sql="SELECT EST_NO 매물번호,EST_NAME 매물이름,EST_ADDRESS 주소,EST_TYPE 주거형태,\r\n" + 
 				"EST_SUPAREA 공급면적,EST_EXCAREA 전용면적,EST_PRICE 가격,EST_TRANTYPE 거래유형,\r\n" + 
@@ -99,6 +112,23 @@ public class RealtorDao {
 				"WHERE EST_NO=? AND RET_ID=?";
 		jdbc.update(sql, param);
 		
+	}
+
+	public List<Map<String, Object>> retReviewList(List<Object> param) {
+		String sql = " SELECT R.REV_NO REV_NO, TO_CHAR(R.REV_DATE, 'YYYY.MM.DD') REV_DATE, R.REV_SCORE REV_SCORE, R.REV_CONTENT REV_CONTENT\n" + 
+					 "FROM REVIEW R JOIN ESTATE E ON(R.EST_NO = E.EST_NO)\n" + 
+					 "WHERE E.RET_ID = ?\n" + 
+					 "ORDER BY R.REV_DATE DESC";
+		
+		return jdbc.selectList(sql, param);
+	}
+
+	public Map<String, Object> retReviewScore(List<Object> param) {
+		String sql = " SELECT ROUND(AVG(REV_SCORE),1) 평균평점\n" + 
+					 "FROM REVIEW R JOIN ESTATE E ON(R.EST_NO = E.EST_NO)\n" + 
+					 "WHERE E.RET_ID = ?";
+		
+		return jdbc.selectOne(sql, param);
 	}
 
 }
