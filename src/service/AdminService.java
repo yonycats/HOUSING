@@ -34,35 +34,61 @@ public class AdminService {
 		}
 		return true;
 	}
-
-	
-	public Map<String, Object> daySaleTotal(List<Object> param) {
-		return adminDao.daySaleTotal(param);
-	}
-	
-	
-//	public List<Map<String, Object>> daySaleTotal(List<Object> param) {
-//		return adminDao.daySaleTotal(param);
-//	}
-
 	
 	public List<Map<String, Object>> tichetList() {
 		return adminDao.tichetList();
 	}
 
-	
 	public void adminTicketInsert(List<Object> param) {
 		adminDao.adminTicketInsert(param);
 	}
 	
-
 	public void adminTicketUpdate(List<Object> param) {
 		adminDao.adminTicketUpdate(param);
 	}
-
 	
 	public int adminTicketDelete(List<Object> param) {
 		return adminDao.adminTicketDelete(param);
+	}
+
+	public List<Map<String, Object>> adminReportList() {
+		return adminDao.adminReportList();
+	}
+
+	public List<Map<String, Object>> adminReportDoing() {
+		return adminDao.adminReportDoing();
+	}
+
+	public List<Map<String, Object>> adminReportFinish() {
+		return adminDao.adminReportFinish();
+	}
+
+	public Map<String, Object> adminReportDetail(List<Object> param) {
+		return adminDao.adminReportDetail(param);
+	}
+
+	public Map<String, Object> adminSaleDay(List<Object> param) {
+		return adminDao.adminSaleDay(param);
+	}
+	
+	public List<Map<String, Object>> daySaleTier(List<Object> param) {
+		return adminDao.daySaleTier(param);
+	}
+
+	public Map<String, Object> adminSaleMonth(List<Object> param) {
+		return adminDao.adminSaleMonth(param);
+	}
+
+	public List<Map<String, Object>> monthSaleTier(List<Object> param) {
+		return adminDao.monthSaleTier(param);
+	}
+
+	public Map<String, Object> adminSaleYear(List<Object> param) {
+		return adminDao.adminSaleYear(param);
+	}
+
+	public List<Map<String, Object>> yearSaleTier(List<Object> param) {
+		return adminDao.yearSaleTier(param);
 	}
 	
 	

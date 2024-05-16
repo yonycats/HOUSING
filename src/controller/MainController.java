@@ -81,18 +81,21 @@ public class MainController extends Print {
 			case ADMIN_REPORT_FINISH:
 				view = adminReportFinish();
 				break;
+			case ADMIN_REPORT_EST:
+				view = adminReportEst();
+				break;
 			case ADMIN_SALE:
 				view = adminSale();
 				break;
 			case ADMIN_SALEDAY:
 				view = adminSaleDay();
 				break;
-//			case ADMIN_SALEMONTH:
-//				view = adminSaleMonth();
-//				break;
-//			case ADMIN_SALEYEAR:
-//				view = adminSaleYear();
-//				break;
+			case ADMIN_SALEMONTH:
+				view = adminSaleMonth();
+				break;
+			case ADMIN_SALEYEAR:
+				view = adminSaleYear();
+				break;
 			case ADMIN_TICKET:
 				view = adminTicket();
 				break;
@@ -129,12 +132,57 @@ public class MainController extends Print {
 		}
 	}
 
+	private View adminReportEst() {
+		if (debug) System.out.println("=========매물 신고 상세보기=========");
+		System.out.println();
+		
+		BigDecimal estNo = (BigDecimal)sessionStorage.get("estNo");
+		
+		
+		
+		
+		return View.ADMIN_REPORT;
+	}
+
 	
 	private View adminReportFinish() {
 		if (debug) System.out.println("=========처리완료 신고 목록=========");
 		System.out.println();
 		
-		return View.ADMIN_REPORT;
+		List<Map<String, Object>> param = adminService.adminReportFinish();
+		
+		if (param==null) {
+			System.out.println("해당 신고 내역이 없습니다.");
+			System.out.println();
+			return View.ADMIN_REPORT;
+		}
+		
+		for (Map<String, Object> map : param) {
+			String state = (String)map.get("RPT_STATE");
+			if (state.equals("DO")) state = "처리중";
+			else if (state.equals("FIN")) state = "처리완료";
+			BigDecimal no = (BigDecimal)map.get("RPT_NO");
+			String date = (String)map.get("RPT_DATE");
+			String memId = (String)map.get("MEM_ID");
+			BigDecimal estNo = (BigDecimal)map.get("EST_NO");
+			String title = (String)map.get("RPT_TITLE");
+			String content = (String)map.get("RPT_CONTENT");
+			
+			System.out.println("No."+no+"\t\t[신고일] "+date+"\t[신고자] "+memId+"\t[매물번호] "+estNo);
+			System.out.println("[상태] "+state+"\t[제목] "+title+"\t[신고 내용 ] "+content);
+			System.out.println();
+		}
+		
+		System.out.println("1. 신고 상세보기");
+		System.out.println("2. 뒤로가기");
+		
+		System.out.println();
+		
+		int sel = ScanUtil.menu();
+		
+		if (sel==1) return View.ADMIN_REPORT_DETAIL;
+		else if (sel==2) return View.ADMIN_REPORT;
+		else return View.ADMIN;
 	}
 
 	
@@ -142,13 +190,78 @@ public class MainController extends Print {
 		if (debug) System.out.println("=========미처리 신고 목록=========");
 		System.out.println();
 		
-		return View.ADMIN_REPORT;
+		List<Map<String, Object>> param = adminService.adminReportDoing();
+		
+		if (param==null) {
+			System.out.println("해당 신고 내역이 없습니다.");
+			System.out.println();
+			return View.ADMIN_REPORT;
+		}
+		
+		for (Map<String, Object> map : param) {
+			String state = (String)map.get("RPT_STATE");
+			if (state.equals("DO")) state = "처리중";
+			else if (state.equals("FIN")) state = "처리완료";
+			BigDecimal no = (BigDecimal)map.get("RPT_NO");
+			String date = (String)map.get("RPT_DATE");
+			String memId = (String)map.get("MEM_ID");
+			BigDecimal estNo = (BigDecimal)map.get("EST_NO");
+			String title = (String)map.get("RPT_TITLE");
+			String content = (String)map.get("RPT_CONTENT");
+			
+			System.out.println("No."+no+"\t\t[신고일] "+date+"\t[신고자] "+memId+"\t[매물번호] "+estNo);
+			System.out.println("[상태] "+state+"\t[제목] "+title+"\t[신고 내용 ] "+content);
+			System.out.println();
+		}
+		
+		System.out.println("1. 신고 상세보기");
+		System.out.println("2. 뒤로가기");
+		
+		System.out.println();
+		
+		int sel = ScanUtil.menu();
+		
+		if (sel==1) return View.ADMIN_REPORT_DETAIL;
+		else if (sel==2) return View.ADMIN_REPORT;
+		else return View.ADMIN;
 	}
 
 	
 	private View adminReportDetail() {
 		if (debug) System.out.println("=========신고 상세보기=========");
 		System.out.println();
+		
+		List<Object> param = new ArrayList<Object>();
+		int sel = ScanUtil.nextInt("번호 선택 : ");
+		param.add(sel);
+		
+		Map<String, Object> ReportDetail = adminService.adminReportDetail(param);
+		
+		String state = (String)ReportDetail.get("RPT_STATE");
+		if (state.equals("DO")) state = "처리중";
+		else if (state.equals("FIN")) state = "처리완료";
+		BigDecimal no = (BigDecimal)ReportDetail.get("RPT_NO");
+		String date = (String)ReportDetail.get("RPT_DATE");
+		String memId = (String)ReportDetail.get("MEM_ID");
+		BigDecimal estNo = (BigDecimal)ReportDetail.get("EST_NO");
+		String title = (String)ReportDetail.get("RPT_TITLE");
+		String content = (String)ReportDetail.get("RPT_CONTENT");
+		
+		System.out.println("No."+no+"\t\t[신고일] "+date+"\t[신고자] "+memId+"\t[매물번호] "+estNo);
+		System.out.println("[상태] "+state+"\t[제목] "+title+"\t\t[신고 내용 ] "+content);
+		System.out.println();
+		
+		System.out.println("1. 해당 매물 신고 상세보기");
+		System.out.println("2. 뒤로가기");
+		System.out.println();
+		
+		sel = ScanUtil.menu();
+		
+		if (sel==1) {
+			sessionStorage.put("estNo", estNo);
+			return View.ADMIN_REPORT_LIST;
+		}
+		else if (sel==2) return View.ADMIN_REPORT;
 		
 		return View.ADMIN_REPORT;
 	}
@@ -159,7 +272,21 @@ public class MainController extends Print {
 		
 		List<Map<String, Object>> param = adminService.adminReportList();
 		
-		int no = param.get("RPT_NO");
+		for (Map<String, Object> map : param) {
+			String state = (String)map.get("RPT_STATE");
+			if (state.equals("DO")) state = "처리중";
+			else if (state.equals("FIN")) state = "처리완료";
+			BigDecimal no = (BigDecimal)map.get("RPT_NO");
+			String date = (String)map.get("RPT_DATE");
+			String memId = (String)map.get("MEM_ID");
+			BigDecimal estNo = (BigDecimal)map.get("EST_NO");
+			String title = (String)map.get("RPT_TITLE");
+			String content = (String)map.get("RPT_CONTENT");
+			
+			System.out.println("No."+no+"\t\t[신고일] "+date+"\t[신고자] "+memId+"\t[매물번호] "+estNo);
+			System.out.println("[상태] "+state+"\t[제목] "+title+"\t[신고 내용 ] "+content);
+			System.out.println();
+		}
 		
 		return View.ADMIN_REPORT;
 	}
@@ -168,8 +295,6 @@ public class MainController extends Print {
 	private View adminReport() {
 		if (debug) System.out.println("=========신고 관리=========");
 		System.out.println();
-
-		adminReportList();
 		
 		System.out.println("1. 전체 신고 목록");
 		System.out.println("2. 미처리 신고 목록");
@@ -300,26 +425,91 @@ public class MainController extends Print {
 	}
 
 	
-//	private View adminSaleDay() {
-//		if (debug) System.out.println("=========일 매출 내역=========");
-//		System.out.println();
-//		
-//		System.out.println("매출 조회를 원하는 날짜를 입력하세요.");
-//		String year = ScanUtil.nextLine("연도 : ");
-//		String month = ScanUtil.nextLine("월 : ");
-//		String day = ScanUtil.nextLine("일 : ");
-//		String dates = year+month+day;
-//		
-//		List<Object> param = new ArrayList<Object>();
-//		param.add(dates);
-//		List<Map<String, Object>> date = adminService.daySaleTotal(param);
-//		
-//		prints(date);
-//		
-//		System.out.println();
-//		return View.ADMIN_SALE;
-//	}
+	private View adminSaleYear() {
+		if (debug) System.out.println("=========연 매출 내역=========");
+		System.out.println();
+		
+		System.out.println("매출 조회를 원하는 날짜를 입력하세요.");
+		String year = ScanUtil.nextLine("연도 : ");
+		
+		String date1 = year+"0101";
+		String date2 = year+"1201";
+		
+		List<Object> param = new ArrayList<Object>();
+		param.add(date1);
+		param.add(date2);
+		Map<String, Object> date = adminService.adminSaleYear(param);
+		
+		if (date.get("TIC_PRICE")==null) {
+			System.out.println();
+			System.out.println("해당 날짜의 판매내역이 없습니다.");
+			System.out.println();
+			return View.ADMIN_SALE;
+		}
+		
+		String price = (String) date.get("TIC_PRICE");
+		System.out.println();
+		System.out.println("[ "+year+"년  "+"총매출 ] \t\t\t"+price+"원");
+		System.out.println();
+		
+		List<Map<String, Object>> tier = adminService.yearSaleTier(param);
+		for (Map<String, Object> map : tier) {
+			String tierName = (String) map.get("TIC_TIER");
+			String tierSale = (String) map.get("TIC_PRICE");
+			BigDecimal tierCount = (BigDecimal) map.get("판매갯수");
+			System.out.println("["+tierName+"]    \t"+"[판매갯수] "+tierCount+"개\t"+tierSale+"원");
+		}
+
+		System.out.println();
+		return View.ADMIN_SALE;
+	}
+
 	
+	private View adminSaleMonth() {
+		if (debug) System.out.println("=========월 매출 내역=========");
+		System.out.println();
+		
+		System.out.println("매출 조회를 원하는 날짜를 입력하세요.");
+		String year = ScanUtil.nextLine("연도 : ");
+		String month = ScanUtil.nextLine("월 : ");
+		
+		if (month.equals("1") || month.equals("2") || month.equals("3") || month.equals("4") || month.equals("5")
+				 || month.equals("6") || month.equals("7") || month.equals("8") || month.equals("9")) {
+			String month1 = "0"+month;
+			month = month1;
+		}
+		String date1 = year+month+"01";
+		String date2 = year+month+"01";
+		
+		List<Object> param = new ArrayList<Object>();
+		param.add(date1);
+		param.add(date2);
+		Map<String, Object> date = adminService.adminSaleMonth(param);
+		
+		if (date.get("TIC_PRICE")==null) {
+			System.out.println();
+			System.out.println("해당 날짜의 판매내역이 없습니다.");
+			System.out.println();
+			return View.ADMIN_SALE;
+		}
+		
+		String price = (String) date.get("TIC_PRICE");
+		System.out.println();
+		System.out.println("[ "+year+"년  "+month+"월  "+"총매출 ] \t\t"+price+"원");
+		System.out.println();
+		
+		List<Map<String, Object>> tier = adminService.monthSaleTier(param);
+		for (Map<String, Object> map : tier) {
+			String tierName = (String) map.get("TIC_TIER");
+			String tierSale = (String) map.get("TIC_PRICE");
+			BigDecimal tierCount = (BigDecimal) map.get("판매갯수");
+			System.out.println("["+tierName+"]    \t"+"[판매갯수] "+tierCount+"개\t"+tierSale+"원");
+		}
+
+		System.out.println();
+		return View.ADMIN_SALE;
+	}
+
 	
 	private View adminSaleDay() {
 		if (debug) System.out.println("=========일 매출 내역=========");
@@ -344,11 +534,28 @@ public class MainController extends Print {
 		
 		List<Object> param = new ArrayList<Object>();
 		param.add(dates);
-		Map<String, Object> date = adminService.daySaleTotal(param);
+		Map<String, Object> date = adminService.adminSaleDay(param);
+		
+		if (date.get("TIC_PRICE")==null) {
+			System.out.println();
+			System.out.println("해당 날짜의 판매내역이 없습니다.");
+			System.out.println();
+			return View.ADMIN_SALE;
+		}
 		
 		String price = (String) date.get("PRICE");
-		System.out.println("[ "+year+"년  "+month+"월  "+day+"일  매출 ] "+price+"원");
+		System.out.println();
+		System.out.println("[ "+year+"년  "+month+"월  "+day+"일  총매출 ] \t\t"+price+"원");
+		System.out.println();
 		
+		List<Map<String, Object>> tier = adminService.daySaleTier(param);
+		for (Map<String, Object> map : tier) {
+			String tierName = (String) map.get("TIC_TIER");
+			String tierSale = (String) map.get("TIC_PRICE");
+			BigDecimal tierCount = (BigDecimal) map.get("판매갯수");
+			System.out.println("["+tierName+"]    \t"+"[판매갯수] "+tierCount+"개\t"+tierSale+"원");
+		}
+
 		System.out.println();
 		return View.ADMIN_SALE;
 	}
@@ -439,7 +646,6 @@ public class MainController extends Print {
 	
 	private View adminNoticeDelete() {
 		if (debug) System.out.println("=========공지사항 삭제=========");
-		noticeList();
 		System.out.println();
 		
 		List<Object> param = new ArrayList<Object>();
@@ -456,7 +662,6 @@ public class MainController extends Print {
 	
 	private View adminNoticeUpdate() {
 		if (debug) System.out.println("=========공지사항 수정=========");
-		noticeList();
 		System.out.println();
 		
 		List<Object> param = new ArrayList<Object>();
@@ -477,7 +682,6 @@ public class MainController extends Print {
 	
 	private View adminNoticeInsert() {
 		if (debug) System.out.println("=========공지사항 작성=========");
-		noticeList();
 		System.out.println();
 		
 		List<Object> param = new ArrayList<Object>();
@@ -656,6 +860,8 @@ public class MainController extends Print {
 		else if (sel == 9) return View.HOME;
 		else if (sel == 10) {
 			sessionStorage.remove("admin");
+			System.out.println("로그아웃이 완료되었습니다.");
+			System.out.println();
 			return View.HOME;
 		}
 		else return View.ADMIN;
@@ -739,6 +945,8 @@ public class MainController extends Print {
 		else if (sel==4) return View.ADMIN_SALE;
 		else if (sel==5) {
 			sessionStorage.remove("admin");
+			System.out.println("로그아웃이 완료되었습니다.");
+			System.out.println();
 			return View.HOME;
 		}
 		else return View.ADMIN;
