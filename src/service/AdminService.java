@@ -25,12 +25,12 @@ public class AdminService {
 	
 	
 	public boolean login(List<Object> param) {
-		Map<String, Object> member = adminDao.login(param);
+		Map<String, Object> admin = adminDao.login(param);
 		
-		if(member == null) {
+		if(admin == null) {
 			return false;
-		} else if(member != null) {
-		MainController.sessionStorage.put("member", member);
+		} else if(admin != null) {
+		MainController.sessionStorage.put("admin", admin);
 		}
 		return true;
 	}
@@ -66,7 +66,26 @@ public class AdminService {
 	public Map<String, Object> adminReportDetail(List<Object> param) {
 		return adminDao.adminReportDetail(param);
 	}
+	
+	public List<Map<String, Object>> noticeList() {
+		return adminDao.noticeList();
+	}
 
+	
+	public void adminNoticeInsert(List<Object> param) {
+		adminDao.adminNoticeInsert(param);
+	}
+
+	
+	public void adminNoticeUpdate(List<Object> param) {
+		adminDao.adminNoticeUpdate(param);
+	}
+
+	
+	public int adminNoticeDelete(List<Object> param) {
+		return adminDao.adminNoticeDelete(param);
+	}
+	
 	public Map<String, Object> adminSaleDay(List<Object> param) {
 		return adminDao.adminSaleDay(param);
 	}

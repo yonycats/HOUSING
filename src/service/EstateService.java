@@ -24,17 +24,17 @@ public class EstateService {
 	EstateDao estateDao = EstateDao.getInstance();
 
 	
-	public List<Map<String, Object>> estList() {
-		return estateDao.estList();
+	public List<Map<String, Object>> estList(List<Object> param) {
+		return estateDao.estList(param);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+	public void estAdd(List<Object> param) {
+		estateDao.estAdd(param);
+	}
+
+	public Map<String, Object> estDetail(List<Object> param) {
+		return estateDao.estDetail(param);
+	}
 	
 	
 }
