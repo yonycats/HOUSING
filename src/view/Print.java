@@ -25,6 +25,15 @@ public class Print {
 		printLn(5);
 		printVar();
 	}
+	public void printReviewHome() {
+		printVar();
+		System.out.println("1. 리뷰 수정");
+		System.out.println("2. 리뷰 삭제");
+		System.out.println("3. 회원 메뉴");
+		System.out.println("4. 홈");
+		printLn(5);
+		printVar();
+	}
 	public void printSignList() {
 		printVar();
 		System.out.println("1. 일반 회원 가입");

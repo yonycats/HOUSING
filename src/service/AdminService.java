@@ -5,6 +5,7 @@ import java.util.Map;
 
 import controller.MainController;
 import dao.AdminDao;
+import util.View;
 
 public class AdminService {
 	private static AdminService instance;
