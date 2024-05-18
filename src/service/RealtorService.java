@@ -52,8 +52,8 @@ public class RealtorService {
 		return realtorDao.list(param);
 	}
 
-	public List<Map<String, Object>> comList() {
-		return realtorDao.comList();
+	public List<Map<String, Object>> comList(List<Object> param1) {
+		return realtorDao.comList(param1);
 	}
 	
 	public void companyInsert(List<Object> param) {
@@ -86,6 +86,22 @@ public class RealtorService {
 
 	public Map<String, Object> retReviewScore(List<Object> param) {
 		return realtorDao.retReviewScore(param);
+	}
+	
+	public Map<String, Object> sellerInfo(List<Object> param) {
+		return realtorDao.sellerInfo(param);
+	}
+
+	public Map<String, Object> myAddComNo() {
+		return realtorDao.myAddComNo();
+	}
+
+	public Map<String, Object> findPw(List<Object> param) {
+		return realtorDao.findPw(param);
+	}
+
+	public Map<String, Object> findId(List<Object> param) {
+		return realtorDao.findId(param);
 	}
 
 }

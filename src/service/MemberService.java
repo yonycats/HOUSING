@@ -63,6 +63,14 @@ public class MemberService {
 		return memberDao.reviewList(param);
 	}
 
+	public List<Map<String, Object>> memberReviewList(List<Object> param) {
+		return memberDao.memberReviewList(param);
+	}
+
+	public Map<String, Object> memberReviewScore(List<Object> param) {
+		return memberDao.memberReviewScore(param);
+	}
+	
 	public int reviewDelete(List<Object> param) {
 		return memberDao.reviewDelete(param);
 	}
@@ -120,5 +128,18 @@ public class MemberService {
 		return memberDao.memberReport(param);
 	}
 	
+	public Map<String, Object> sellerInfo(List<Object> param) {
+		return memberDao.sellerInfo(param);
+	}
+
+	public Map<String, Object> findPw(List<Object> param) {
+		return memberDao.findPw(param);
+	}
+
+	public Map<String, Object> findId(List<Object> param) {
+		return memberDao.findId(param);
+	}
+
+
 	
 }

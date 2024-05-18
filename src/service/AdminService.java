@@ -51,16 +51,12 @@ public class AdminService {
 		return adminDao.adminTicketDelete(param);
 	}
 
-	public List<Map<String, Object>> adminReportList() {
-		return adminDao.adminReportList();
-	}
+	public List<Map<String, Object>> adminReportList(List<Object> param) {
+	      return adminDao.adminReportList(param);
+	   }
 
-	public List<Map<String, Object>> adminReportDoing() {
-		return adminDao.adminReportDoing();
-	}
-
-	public List<Map<String, Object>> adminReportFinish() {
-		return adminDao.adminReportFinish();
+	public List<Map<String, Object>> adminReportRecord(List<Object> param1) {
+		return adminDao.adminReportRecord(param1);
 	}
 
 	public Map<String, Object> adminReportDetail(List<Object> param) {
@@ -113,6 +109,69 @@ public class AdminService {
 	public Map<String, Object> noticeListDetail(List<Object> param) {
 		return adminDao.noticeListDetail(param);
 	}
+
+	public List<Map<String, Object>> adminReportDetailEst(List<Object> param1) {
+		return adminDao.adminReportDetailEst(param1);
+	}
+
+	public Map<String, Object> adminReportRetRptcnt(List<Object> retRptcnt) {
+		return adminDao.adminReportRetRptcnt(retRptcnt);
+	}
 	
+	public Map<String, Object> adminReportMemRptcnt(List<Object> retRptcnt) {
+		return adminDao.adminReportMemRptcnt(retRptcnt);
+	}
+
+	public int retCntAdd(List<Object> selId) {
+		return adminDao.retCntAdd(selId);
+	}
+
+	public int memCntAdd(List<Object> selId) {
+		return adminDao.memCntAdd(selId);
+	}
+
+	public int rptReject(List<Object> rptNo3) {
+		return adminDao.rptReject(rptNo3);
+	}
+
+	public int rptDelynFin(List<Object> rptCntNo) {
+		return adminDao.rptDelynFin(rptCntNo);
+	}
+
+	public int estCntAdd(List<Object> estCntNo) {
+		return adminDao.estCntAdd(estCntNo);
+	}
+
+	public void estDelynUpdate(List<Object> estCntNo) {
+		adminDao.estDelynUpdate(estCntNo);
+	}
+
+	public void retDelynUpdate(List<Object> selId) {
+		adminDao.retDelynUpdate(selId);
+	}
+
+	public void memDelynUpdate(List<Object> selId) {
+		adminDao.memDelynUpdate(selId);
+	}
+	
+	public List<Map<String, Object>> adminMemberList(List<Object> param) {
+		return adminDao.adminMemberList(param);
+	}
+
+	public List<Map<String, Object>> adminRealtorList(List<Object> param) {
+		return adminDao.adminRealtorList(param);
+	}
+
+	public List<Map<String, Object>> adminRetcomList(List<Object> param) {
+		return adminDao.adminRetcomList(param);
+	}
+
+	public Map<String, Object> myCom(List<Object> myCom) {
+		return adminDao.myCom(myCom);
+	}
+
+	public List<Map<String, Object>> admincomList(List<Object> param) {
+		return adminDao.adminRetcomList(param);
+	}
 	
 }

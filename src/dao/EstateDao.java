@@ -39,11 +39,24 @@ public class EstateDao {
 	}
 
 	public Map<String, Object> estDetail(List<Object> param) {
-		String sql="SELECT * FROM ESTATE\r\n" + 
-				"WHERE EST_NO=?";
+		String sql="SELECT EST_NO,EST_NAME,EST_ADDRESS,EST_TYPE,EST_SUPAREA,EST_EXCAREA,EST_PRICE,\r\n" + 
+				"    EST_TRANTYPE,EST_STATE,EST_FEE,EST_DEPOSIT,EST_FLOOR,EST_DATE\r\n" + 
+				"    FROM ESTATE\r\n" + 
+				"    WHERE EST_NO=?";
 		return jdbc.selectOne(sql, param);
 	}
 	
-	
+	public List<Map<String, Object>> estSearchList(List<Object> param) {
+		String sql="SELECT EST_NO, EST_NAME, EST_ADDRESS, EST_FLOOR, EST_TYPE, EST_SUPAREA, EST_EXCAREA,\r\n" + 
+				"    EST_PRICE, EST_TRANTYPE, EST_STATE, EST_FEE, EST_DEPOSIT, TO_CHAR(EST_DATE, 'YYYY.MM.DD') EST_DATE FROM ESTATE\r\n" + 
+				"WHERE EST_ADDRESS LIKE ?\r\n" + 
+				"AND EST_TYPE=?\r\n" + 
+				"AND EST_TRANTYPE=?\r\n" + 
+				"AND (EST_SUPAREA BETWEEN ? AND ?)\r\n" + 
+				"AND (EST_EXCAREA BETWEEN ? AND ?)\r\n" + 
+				"AND (EST_PRICE BETWEEN ? AND ?)\r\n" + 
+				"AND EST_DELYN='N'";
+		return jdbc.selectList(sql, param);
+	}
 	
 }

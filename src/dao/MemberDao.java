@@ -32,11 +32,11 @@ public class MemberDao {
 	}
 	
 	public void sign(List<Object> param) {
-		String sql = " INSERT INTO MEMBER (MEM_NO, MEM_ID, MEM_PW, MEM_NAME, MEM_DELYN)\r\n" + 
-					 "VALUES ((SELECT NVL(MAX(MEM_NO), 0)+1 FROM MEMBER), ?, ?, ?, 'N')";
-		
-		jdbc.update(sql, param);
-	}
+	      String sql = " INSERT INTO MEMBER\r\n" + 
+	                   "VALUES (?,?,?,?,?,?,0,'N','NORMAL',0)";
+	      
+	      jdbc.update(sql, param);
+	   }
 
 	public void memberUpdate(List<Object> param) {
 		String sql = " UPDATE MEMBER\r\n" + 
@@ -69,21 +69,39 @@ public class MemberDao {
 	}
 	
 	public List<Map<String, Object>> reviewList(List<Object> param) {
-		String sql="SELECT REV_NO 리뷰번호,EST_NO 매물번호,REV_CONTENT 내용,REV_SCORE 평점,REV_DATE 작성일 FROM REVIEW\r\n" + 
+		String sql="SELECT REV_NO,EST_NO,REV_CONTENT ,REV_SCORE,TO_CHAR(REV_DATE, 'YYYY.MM.DD')REV_DATE FROM REVIEW\r\n" + 
 				"WHERE MEM_ID=?";
 		return jdbc.selectList(sql,param);
 	}
 
+	public Map<String, Object> reviewDetail(List<Object> param) {
+		String sql="SELECT REV_NO,EST_NO,REV_CONTENT ,REV_SCORE,TO_CHAR(REV_DATE, 'YYYY.MM.DD')REV_DATE FROM REVIEW\r\n" + 
+				"WHERE REV_NO=?";
+		return jdbc.selectOne(sql,param);
+	}
+	
+	
+	public List<Map<String, Object>> memberReviewList(List<Object> param) {
+		String sql = " SELECT R.REV_NO REV_NO, TO_CHAR(R.REV_DATE, 'YYYY.MM.DD') REV_DATE, R.REV_SCORE REV_SCORE, R.REV_CONTENT REV_CONTENT\n" + 
+				 "FROM REVIEW R JOIN ESTATE E ON(R.EST_NO = E.EST_NO)\n" + 
+				 "WHERE E.MEM_ID = ?\n" + 
+				 "ORDER BY R.REV_DATE DESC";
+	
+	return jdbc.selectList(sql, param);
+	}
+
+	public Map<String, Object> memberReviewScore(List<Object> param) {
+		String sql = " SELECT ROUND(AVG(REV_SCORE),1) 평균평점\n" + 
+				 "FROM REVIEW R JOIN ESTATE E ON(R.EST_NO = E.EST_NO)\n" + 
+				 "WHERE E.MEM_ID = ?";
+	
+	return jdbc.selectOne(sql, param);
+	}
+	
 	public int reviewDelete(List<Object> param) {
 		String sql="DELETE FROM REVIEW\r\n" + 
 				"WHERE REV_NO=?";
 		return jdbc.update(sql, param);
-	}
-
-	public Map<String, Object> reviewDetail(List<Object> param) {
-		String sql="SELECT REV_NO 리뷰번호,EST_NO 매물번호,REV_CONTENT 내용,REV_SCORE 평점,REV_DATE 작성일 FROM REVIEW\r\n" + 
-				"WHERE REV_NO=?";
-		return jdbc.selectOne(sql,param);
 	}
 
 	public void reviewUpdate(List<Object> param) {
@@ -111,24 +129,25 @@ public class MemberDao {
 	}
 
 	public List<Map<String, Object>> myEstList(List<Object> param) {
-		String sql="SELECT EST_NO 매물번호,EST_NAME 매물이름,EST_ADDRESS 주소,EST_TYPE 주거형태,\r\n" + 
-				"EST_SUPAREA 공급면적,EST_EXCAREA 전용면적,EST_PRICE 가격,EST_TRANTYPE 거래유형,\r\n" + 
-				"EST_STATE 판매상태,EST_FEE 관리비,EST_DEPOSIT 보증금,EST_RPTCNT 신고횟수,EST_FLOOR 건물층\r\n" + 
-				"FROM ESTATE\r\n" + 
-				"WHERE MEM_ID=?\r\n" + 
-				"AND EST_DELYN='N'\r\n" + 
-				"ORDER BY EST_NO";
-		
+		String sql="SELECT * FROM\r\n" + 
+				"(SELECT ROWNUM RN,EST_NO, EST_NAME, EST_ADDRESS, EST_FLOOR, EST_TYPE, EST_SUPAREA, EST_EXCAREA,\r\n" + 
+				"				EST_PRICE, EST_TRANTYPE, EST_STATE, EST_FEE, EST_DEPOSIT,EST_RPTCNT, TO_CHAR(EST_DATE, 'YYYY.MM.DD') EST_DATE\r\n" + 
+				"				FROM ESTATE\r\n" + 
+				"				WHERE MEM_ID=?\r\n" + 
+				"				AND EST_DELYN='N'\r\n" + 
+				"                ORDER BY EST_NO)\r\n" + 
+				"                WHERE RN>=? AND RN<=?";
 		return jdbc.selectList(sql,param);
 	}
-
+	
 	public List<Map<String, Object>> estDetailList(List<Object> param) {
-		String sql="SELECT EST_NO 매물번호,EST_NAME 매물이름,EST_ADDRESS 주소,EST_TYPE 주거형태,\r\n" + 
-				"EST_SUPAREA 공급면적,EST_EXCAREA 전용면적,EST_PRICE 가격,EST_TRANTYPE 거래유형,\r\n" + 
-				"EST_STATE 판매상태,EST_FEE 관리비,EST_DEPOSIT 보증금,EST_RPTCNT 신고횟수,EST_FLOOR 건물층\r\n" + 
-				"FROM ESTATE\r\n" + 
-				"WHERE EST_STATE=? AND MEM_ID=?\r\n" + 
-				"ORDER BY EST_NO";
+		String sql="SELECT * FROM     \r\n" + 
+				"    (SELECT ROWNUM RN,EST_NO, EST_NAME, EST_ADDRESS, EST_FLOOR, EST_TYPE, EST_SUPAREA, EST_EXCAREA,\r\n" + 
+				"				EST_PRICE, EST_TRANTYPE, EST_STATE, EST_FEE, EST_DEPOSIT,EST_RPTCNT, TO_CHAR(EST_DATE, 'YYYY.MM.DD') EST_DATE \r\n" + 
+				"				FROM ESTATE\r\n" + 
+				"				WHERE EST_STATE=? AND MEM_ID=?\r\n" + 
+				"				ORDER BY EST_NO)\r\n" + 
+				"                WHERE RN>=? AND RN<=?";
 		return jdbc.selectList(sql,param);
 	}
 
@@ -169,9 +188,42 @@ public class MemberDao {
 	}
 
 	public int memberReport(List<Object> param) {
-		String sql = " ";
+		String sql = " INSERT INTO REPORT\r\n" + 
+					 "VALUES ((SELECT NVL(MAX(NTC_NO),0)+1 FROM NOTICE), ?, ?, ?, ?, SYSDATE, 'DO' )";
 	
 	return jdbc.update(sql, param);
 	}
+	
+	public Map<String, Object> sellerInfo(List<Object> param) {
+		String sql="SELECT \r\n" + 
+				"    M.MEM_NAME 판매자이름,\r\n" + 
+				"    M.MEM_TEL 판매자전화번호,\r\n" + 
+				"    M.MEM_ADDRESS 판매자주소,\r\n" + 
+				"    M.MEM_NICKNAME 판매자닉네임,\r\n" + 
+				"    ROUND(AVG(R.REV_SCORE),1) AS 평균별점\r\n" + 
+				"FROM MEMBER M\r\n" + 
+				"JOIN ESTATE E ON M.MEM_ID = E.MEM_ID\r\n" + 
+				"JOIN REVIEW R ON E.EST_NO = R.EST_NO\r\n" + 
+				"WHERE E.MEM_ID = (SELECT MEM_ID FROM ESTATE WHERE EST_NO =?)\r\n" + 
+				"GROUP BY M.MEM_ID, M.MEM_NAME, M.MEM_TEL, M.MEM_ADDRESS, M.MEM_NICKNAME";
+		return jdbc.selectOne(sql, param);
+	}
+	
+	public Map<String, Object> findId(List<Object> param) {
+		String sql="SELECT * FROM MEMBER\r\n" + 
+					"WHERE MEM_NAME=?\r\n" + 
+					"AND MEM_TEL=?";
+		return jdbc.selectOne(sql, param);
+	}
+	
+	public Map<String, Object> findPw(List<Object> param) {
+		String sql=" SELECT * FROM MEMBER\r\n" + 
+				"WHERE MEM_ID=?\r\n" + 
+				"AND MEM_NAME=?\r\n" + 
+				"AND MEM_TEL=?";
+		return jdbc.selectOne(sql, param);
+	}
+
+
 	
 }

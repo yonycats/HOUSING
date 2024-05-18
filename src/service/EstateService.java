@@ -36,5 +36,7 @@ public class EstateService {
 		return estateDao.estDetail(param);
 	}
 	
-	
+	public List<Map<String, Object>> estSearchList(List<Object> param) {
+		return estateDao.estSearchList(param);
+	}
 }

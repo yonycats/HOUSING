@@ -30,11 +30,10 @@ public class RealtorDao {
 	}
 
 	public void sign(List<Object> param) {
-		String sql="INSERT INTO REALTOR\r\n" + 
-				"VALUES(?,?,?,?,?,0,0,'N','NORMAL',\r\n" + 
-				"(SELECT COM_NO FROM COMPANY WHERE COM_NAME=?))";
-		jdbc.update(sql, param);
-	}
+	      String sql="INSERT INTO REALTOR\r\n" + 
+	    		  	 "            VALUES(?,?,?,?,?,0,0,'N','NORMAL',?)";
+	      jdbc.update(sql, param);
+	   }
 	
 	public Map<String, Object> retInfo(List<Object> param) {
 		String sql = " SELECT RET_PW, RET_NAME, RET_TEL, RET_MAIL, RET_RPTCNT, RET_BANK, RET_DELYN, TIC_TIER, COM_NO\n" + 
@@ -55,11 +54,18 @@ public class RealtorDao {
 		return jdbc.selectList(sql,param);
 	}
 
-	public List<Map<String, Object>> comList() {
-		String sql="SELECT COM_NO, COM_NAME FROM COMPANY\r\n" + 
-				"WHERE COM_DELYN='N'"
-				+ "ORDER BY COM_NAME";
-		return jdbc.selectList(sql);
+	public List<Map<String, Object>> comList(List<Object> param1) {
+		String sql=" SELECT *\n" + 
+				"FROM\n" + 
+				"(SELECT ROWNUM RN, COM_NO, COM_NAME, COM_TEL \n" + 
+				"FROM \n" + 
+				"    (SELECT COM_NO, COM_NAME, COM_TEL \n" + 
+				"    FROM COMPANY\n" + 
+				"    WHERE COM_DELYN='N'\n" + 
+				"    ORDER BY COM_NAME))\n" + 
+				"WHERE (RN>=? AND RN<=?)";
+		
+		return jdbc.selectList(sql, param1);
 	}
 
 	public void companyInsert(List<Object> param) {
@@ -69,24 +75,26 @@ public class RealtorDao {
 	}
 	
 	public List<Map<String, Object>> myEstList(List<Object> param) {
-		String sql="SELECT EST_NO 매물번호,EST_NAME 매물이름,EST_ADDRESS 주소,EST_TYPE 주거형태,\r\n" + 
-				"EST_SUPAREA 공급면적,EST_EXCAREA 전용면적,EST_PRICE 가격,EST_TRANTYPE 거래유형,\r\n" + 
-				"EST_STATE 판매상태,EST_FEE 관리비,EST_DEPOSIT 보증금,EST_RPTCNT 신고횟수,EST_FLOOR 건물층\r\n" + 
-				"FROM ESTATE\r\n" + 
-				"WHERE MEM_ID=?\r\n" + 
-				"AND RET_DELYN='N'\r\n" + 
-				"ORDER BY EST_NO";
+		String sql="SELECT * FROM\r\n" + 
+				"(SELECT ROWNUM RN,EST_NO, EST_NAME, EST_ADDRESS, EST_FLOOR, EST_TYPE, EST_SUPAREA, EST_EXCAREA,\n" + 
+				"				EST_PRICE, EST_TRANTYPE, EST_STATE, EST_FEE, EST_DEPOSIT, TO_CHAR(EST_DATE, 'YYYY.MM.DD') EST_DATE\n" + 
+				"				FROM ESTATE\n" + 
+				"				WHERE RET_ID=?\n" + 
+				"				AND EST_DELYN='N'\n" + 
+				"                ORDER BY EST_NO)\r\n" + 
+				"                WHERE RN>=? AND RN<=?";
 		
 		return jdbc.selectList(sql,param);
 	}
-
+	
 	public List<Map<String, Object>> estDetailList(List<Object> param) {
-		String sql="SELECT EST_NO 매물번호,EST_NAME 매물이름,EST_ADDRESS 주소,EST_TYPE 주거형태,\r\n" + 
-				"EST_SUPAREA 공급면적,EST_EXCAREA 전용면적,EST_PRICE 가격,EST_TRANTYPE 거래유형,\r\n" + 
-				"EST_STATE 판매상태,EST_FEE 관리비,EST_DEPOSIT 보증금,EST_RPTCNT 신고횟수,EST_FLOOR 건물층\r\n" + 
-				"FROM ESTATE\r\n" + 
-				"WHERE EST_STATE=? AND RET_ID=?\r\n" + 
-				"ORDER BY EST_NO";
+		String sql="SELECT * FROM     \r\n" + 
+				"    (SELECT ROWNUM RN,EST_NO, EST_NAME, EST_ADDRESS, EST_FLOOR, EST_TYPE, EST_SUPAREA, EST_EXCAREA,\r\n" + 
+				"				EST_PRICE, EST_TRANTYPE, EST_STATE, EST_FEE, EST_DEPOSIT,EST_RPTCNT, TO_CHAR(EST_DATE, 'YYYY.MM.DD') EST_DATE \r\n" + 
+				"				FROM ESTATE\r\n" + 
+				"				WHERE EST_STATE=? AND RET_ID=?\r\n" + 
+				"				ORDER BY EST_NO)\r\n" + 
+				"                WHERE RN>=? AND RN<=?";
 		return jdbc.selectList(sql,param);
 	}
 
@@ -131,4 +139,46 @@ public class RealtorDao {
 		return jdbc.selectOne(sql, param);
 	}
 
+	public Map<String, Object> sellerInfo(List<Object> param) {
+		String sql= "SELECT \r\n" + 
+					"    R.RET_NAME AS 판매자이름,\r\n" + 
+					"    R.RET_TEL AS 판매자전화번호,\r\n" + 
+					"    C.COM_NAME AS 판매자회사이름,\r\n" + 
+					"    C.COM_ADDRESS AS 판매자회사주소,\r\n" + 
+					"    C.COM_TEL AS 판매자회사전화번호,\r\n" + 
+					"    ROUND(AVG(RE.REV_SCORE), 1) AS 평균별점\r\n" + 
+					"FROM REALTOR R\r\n" + 
+					"JOIN ESTATE E ON R.RET_ID = E.RET_ID\r\n" + 
+					"JOIN REVIEW RE ON E.EST_NO = RE.EST_NO\r\n" + 
+					"JOIN COMPANY C ON R.COM_NO = C.COM_NO\r\n" + 
+					"WHERE E.RET_ID = (SELECT RET_ID FROM ESTATE WHERE EST_NO = ?)\r\n" + 
+					"GROUP BY R.RET_ID, R.RET_NAME, R.RET_TEL, C.COM_NAME, C.COM_ADDRESS, C.COM_TEL";
+		
+		return jdbc.selectOne(sql, param);
+	}
+
+	public Map<String, Object> myAddComNo() {
+		String sql= " SELECT *\n" + 
+					"FROM COMPANY\n" + 
+					"WHERE ROWNUM = 1\n" + 
+					"ORDER BY COM_NO DESC";
+		
+		return jdbc.selectOne(sql);
+	}
+	
+	public Map<String, Object> findId(List<Object> param) {
+		String sql="SELECT * FROM REALTOR\r\n" + 
+				"WHERE RET_NAME=?\r\n" + 
+				"AND RET_TEL=?";
+		return jdbc.selectOne(sql, param);
+	}
+
+	public Map<String, Object> findPw(List<Object> param) {
+		String sql="SELECT * FROM REALTOR\r\n" + 
+				"WHERE RET_ID=?\r\n" + 
+				"AND RET_NAME=?\r\n" + 
+				"AND RET_TEL=?";
+		return jdbc.selectOne(sql, param);
+	}
+	
 }
