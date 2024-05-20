@@ -47,7 +47,7 @@ public class MemberService {
 
 	
 	public Map<String, Object> memInfo(List<Object> param) {
-		return memberDao.memInfo();
+		return memberDao.memInfo(param);
 	}
 	
 	public List<Map<String, Object>> memList() {
@@ -140,6 +140,14 @@ public class MemberService {
 		return memberDao.findId(param);
 	}
 
+	public List<Map<String, Object>> reservationList(List<Object> param) {
+		return memberDao.reservationList(param);
+	}
+
+	public void wishListDelete(List<Object> param) {
+		memberDao.wishListDelete(param);
+		
+	}
 
 	
 }

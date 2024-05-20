@@ -38,7 +38,7 @@ public class ScanUtil   {
 				int result = Integer.parseInt(sc.nextLine());
 				return result;
 			}catch (NumberFormatException e) {
-				System.out.println("잘못 입력!!");
+				System.err.println("잘못 입력!!");
 			}
 		}
 	}

@@ -47,12 +47,12 @@ public class MemberDao {
 		jdbc.update(sql, param);
 	}
 
-	public Map<String, Object> memInfo() {
-		String sql = " SELECT MEM_PW, MEM_NAME, MEM_TEL, MEM_ADDRESS, MEM_NICKNAME, MEM_BANK, TIC_TIER, MEM_RPTCNT\r\n" + 
+	public Map<String, Object> memInfo(List<Object> param) {
+		String sql = " SELECT * " + 
 				"FROM MEMBER \r\n" + 
 				"WHERE MEM_ID = ?";
 
-		return jdbc.selectOne(sql);
+		return jdbc.selectOne(sql,param);
 	}
 	
 	public List<Map<String, Object>> memList() {
@@ -70,7 +70,7 @@ public class MemberDao {
 	
 	public List<Map<String, Object>> reviewList(List<Object> param) {
 		String sql="SELECT REV_NO,EST_NO,REV_CONTENT ,REV_SCORE,TO_CHAR(REV_DATE, 'YYYY.MM.DD')REV_DATE FROM REVIEW\r\n" + 
-				"WHERE MEM_ID=?";
+				"WHERE MEM_ID=? ORDER BY REV_NO DESC";
 		return jdbc.selectList(sql,param);
 	}
 
@@ -155,7 +155,7 @@ public class MemberDao {
 		String sql="UPDATE ESTATE\r\n" + 
 				"SET EST_NAME=?,EST_ADDRESS=?,EST_TYPE=?,EST_SUPAREA=?,EST_EXCAREA=?,\r\n" + 
 				"EST_PRICE=?,EST_FEE=?,EST_DEPOSIT=?,EST_FLOOR=?,EST_DATE=SYSDATE\r\n" + 
-				"WHERE EST_NO=?ANDEST_DELYN='N' AND MEM_ID=?";
+				"WHERE EST_NO=? AND EST_DELYN='N' AND MEM_ID=?";
 		jdbc.update(sql, param);
 	}
 
@@ -174,9 +174,14 @@ public class MemberDao {
 	}
 
 	public List<Map<String, Object>> wishList(List<Object> param) {
-		String sql="SELECT WSL_NO 찜번호,EST_NO 매물번호\r\n" + 
-				"FROM WISHLIST\r\n" + 
-				"WHERE MEM_ID=?";
+		String sql=" SELECT E.EST_NO, E.EST_NAME, E.EST_TYPE, E.EST_TRANTYPE\r\n" + 
+				"FROM \r\n" + 
+				"(SELECT W.WSL_NO, W.MEM_ID, W.EST_NO \r\n" + 
+				"FROM WISHLIST W\r\n" + 
+				"WHERE MEM_ID = ?) W\r\n" + 
+				"JOIN\r\n" + 
+				"ESTATE E ON (W.EST_NO = E.EST_NO)\r\n" + 
+				"WHERE E.EST_DELYN='N'";
 		return jdbc.selectList(sql,param);
 	}
 
@@ -224,6 +229,27 @@ public class MemberDao {
 		return jdbc.selectOne(sql, param);
 	}
 
+	public List<Map<String, Object>> reservationList(List<Object> param) {
+		String sql=" SELECT *\r\n" + 
+				"FROM\r\n" + 
+				"(SELECT ROWNUM RN, R.*\r\n" + 
+				"FROM\r\n" + 
+				"(SELECT R.REV_NO 예약번호, TO_CHAR(R.REV_DATE, 'YYYY.MM.DD') 예약날짜, R.MEM_ID 구매희망자, R.EST_NO 예약매물,\r\n" + 
+				"        E.EST_NAME\r\n" + 
+				"        매물이름, E.EST_ADDRESS 매물주소, E.RET_ID 공인판매자, E.MEM_ID 일반판매자\r\n" + 
+				"FROM RESERVATION R JOIN ESTATE E ON(R.EST_NO=E.EST_NO)\r\n" + 
+				"WHERE R.MEM_ID = ?\r\n" + 
+				"ORDER BY R.REV_NO DESC) R\r\n" + 
+				"ORDER BY RN)\r\n" + 
+				"WHERE (RN>=? AND RN<=?)";
+		return jdbc.selectList(sql,param);
+	}
+
+	public void wishListDelete(List<Object> param) {
+		String sql="DELETE FROM WISHLIST\r\n" + 
+				"WHERE EST_NO=? AND MEM_ID=?";
+		jdbc.update(sql, param);
+	}
 
 	
 }

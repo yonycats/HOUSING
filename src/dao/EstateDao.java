@@ -40,7 +40,7 @@ public class EstateDao {
 
 	public Map<String, Object> estDetail(List<Object> param) {
 		String sql="SELECT EST_NO,EST_NAME,EST_ADDRESS,EST_TYPE,EST_SUPAREA,EST_EXCAREA,EST_PRICE,\r\n" + 
-				"    EST_TRANTYPE,EST_STATE,EST_FEE,EST_DEPOSIT,EST_FLOOR,EST_DATE\r\n" + 
+				"    EST_TRANTYPE,EST_STATE,EST_FEE,EST_DEPOSIT,EST_FLOOR,TO_CHAR(EST_DATE, 'YYYY.MM.DD') EST_DATE\r\n" + 
 				"    FROM ESTATE\r\n" + 
 				"    WHERE EST_NO=?";
 		return jdbc.selectOne(sql, param);

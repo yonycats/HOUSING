@@ -104,4 +104,19 @@ public class RealtorService {
 		return realtorDao.findId(param);
 	}
 
+	public List<Map<String, Object>> reservationList(List<Object> param) {
+		return realtorDao.reservationList(param);
+	}
+
+	public void realtorReservationInsert(List<Object> param) {
+		realtorDao.realtorReservationInsert(param);
+	}
+	
+	public void realtorUpdate(List<Object> param) {
+		realtorDao.realtorUpdate(param);
+	}
+	public int realtorDelete(List<Object> param) {
+		return realtorDao.realtorDelete(param);
+}
+
 }

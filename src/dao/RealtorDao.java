@@ -40,7 +40,7 @@ public class RealtorDao {
 					 "				FROM REALTOR\n" + 
 					 "				WHERE RET_ID = ?";
 
-		return jdbc.selectOne(sql);
+		return jdbc.selectOne(sql,param);
 	}
 
 	public List<Map<String, Object>> retList() {
@@ -180,5 +180,44 @@ public class RealtorDao {
 				"AND RET_TEL=?";
 		return jdbc.selectOne(sql, param);
 	}
+
+	public List<Map<String, Object>> reservationList(List<Object> param) {
+		String sql = " SELECT *\n" + 
+				"FROM\n" + 
+				"(SELECT ROWNUM RN, R.*\n" + 
+				"FROM\n" + 
+				"(SELECT R.REV_NO 예약번호, TO_CHAR(R.REV_DATE, 'YYYY.MM.DD') 예약날짜, R.MEM_ID 구매희망자, R.EST_NO 예약매물,\n" + 
+				"        E.EST_NAME 매물이름, E.EST_ADDRESS 매물주소, E.RET_ID 공인판매자, E.MEM_ID 일반판매자\n" + 
+				"FROM RESERVATION R JOIN ESTATE E ON(R.EST_NO=E.EST_NO)\n" + 
+				"WHERE E.RET_ID = ? OR E.MEM_ID = ?\n" + 
+				"ORDER BY R.REV_NO DESC) R\n" + 
+				"ORDER BY RN)\n" + 
+				"WHERE (RN>=? AND RN<=?)";
+	
+	return jdbc.selectList(sql, param);
+	}
+
+	public void realtorReservationInsert(List<Object> param) {
+		String sql=" INSERT INTO RESERVATION\n" + 
+				"VALUES((SELECT NVL(MAX(REV_NO),0)+1 FROM RESERVATION),?,\n" + 
+				"(SELECT MEM_ID FROM MEMBER WHERE MEM_NAME=? AND MEM_TEL=?),?)";
+		jdbc.update(sql, param);
+	}
+	
+	public void realtorUpdate(List<Object> param) {
+		String sql=" UPDATE REALTOR\n" + 
+				"SET RET_PW = ?, RET_NAME = ?, \n" + 
+				"    RET_TEL = ?, RET_MAIL = ?\n" + 
+				"WHERE RET_ID = ?";
+		jdbc.update(sql, param);
+	}
+	
+	public int realtorDelete(List<Object> param) {
+		String sql = " UPDATE REALTOR\r\n" + 
+					 "SET RET_DELYN = 'Y'\r\n" + 
+					 "WHERE RET_ID = ?";
+		
+		return jdbc.update(sql, param);
+}
 	
 }

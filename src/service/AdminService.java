@@ -171,7 +171,7 @@ public class AdminService {
 	}
 
 	public List<Map<String, Object>> admincomList(List<Object> param) {
-		return adminDao.adminRetcomList(param);
+		return adminDao.admincomList(param);
 	}
 	
 }

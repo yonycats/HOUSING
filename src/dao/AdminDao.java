@@ -67,7 +67,7 @@ public class AdminDao {
 		      		"    (SELECT ROWNUM RN,RPT_STATE, RPT_NO, TO_CHAR(RPT_DATE,'YYYY.MM.DD') RPT_DATE, MEM_ID, EST_NO,\r\n" + 
 		      		"                RPT_TITLE, RPAD(RPT_CONTENT, 40, ' ') RPT_CONTENT\r\n" + 
 		      		"                FROM REPORT\r\n" + 
-		      		"                ORDER BY RPT_DATE DESC)\r\n" + 
+		      		"                ORDER BY RPT_NO DESC)\r\n" + 
 		      		"                WHERE RN>=? AND RN<=?";
 		      
 		return jdbc.selectList(sql,param);
@@ -79,7 +79,7 @@ public class AdminDao {
 		      		"    MEM_ID, EST_NO, RPT_TITLE, RPAD(RPT_CONTENT, 40, ' ') RPT_CONTENT\r\n" + 
 		      		"    FROM REPORT\r\n" + 
 		      		"    WHERE RPT_STATE = ?\r\n" + 
-		      		"    ORDER BY RPT_DATE DESC)\r\n" + 
+		      		"    ORDER BY RPT_NO DESC)\r\n" + 
 		      		"    WHERE RN>=? AND RN<=?";
 		   
 		return jdbc.selectList(sql, param);
@@ -350,26 +350,27 @@ public class AdminDao {
 		return jdbc.selectList(sql, param);
 	}
 
-	public List<Map<String, Object>> adminRetcomList(List<Object> param) {
-		String sql=" SELECT C.COM_NO COM_NO,\r\n" + 
-				"C.COM_NAME COM_NAME,\r\n" + 
-				"C.COM_ADDRESS COM_ADDRESS,\r\n" + 
-				"C.COM_TEL COM_TEL,\r\n" + 
-				"C.COM_INTRO COM_INTRO,\r\n" + 
-				"C.COM_DELYN COM_DELYN,\r\n" + 
-				"R.RET_ID RET_ID,\r\n" + 
-				"R.RET_PW RET_PW,\r\n" + 
-				"R.RET_NAME RET_NAME,\r\n" + 
-				"R.RET_TEL RET_TEL,\r\n" + 
-				"R.RET_MAIL RET_MAIL,\r\n" + 
-				"R.RET_RPTCNT RET_RPTCNT,\r\n" + 
-				"R.RET_BANK RET_BANK,\r\n" + 
-				"R.RET_DELYN RET_DELYN,\r\n" + 
-				"R.TIC_TIER TIC_TIER\r\n" + 
-				"FROM COMPANY C JOIN REALTOR R ON (C.COM_NO = R.COM_NO)";
+	   public List<Map<String, Object>> adminRetcomList(List<Object> param) {
+		      String sql="SELECT C.COM_NO COM_NO,\r\n" + 
+		            "C.COM_NAME COM_NAME,\r\n" + 
+		            "C.COM_ADDRESS COM_ADDRESS,\r\n" + 
+		            "C.COM_TEL COM_TEL,\r\n" + 
+		            "C.COM_INTRO COM_INTRO,\r\n" + 
+		            "C.COM_DELYN COM_DELYN,\r\n" + 
+		            "R.RET_ID RET_ID,\r\n" + 
+		            "R.RET_PW RET_PW,\r\n" + 
+		            "R.RET_NAME RET_NAME,\r\n" + 
+		            "R.RET_TEL RET_TEL,\r\n" + 
+		            "R.RET_MAIL RET_MAIL,\r\n" + 
+		            "R.RET_RPTCNT RET_RPTCNT,\r\n" + 
+		            "R.RET_BANK RET_BANK,\r\n" + 
+		            "R.RET_DELYN RET_DELYN,\r\n" + 
+		            "R.TIC_TIER TIC_TIER\r\n" + 
+		            "FROM COMPANY C JOIN REALTOR R ON (C.COM_NO = R.COM_NO)\r\n" + 
+		            "WHERE C.COM_NO = ?";
 
-		return jdbc.selectList(sql, param);
-	}
+		      return jdbc.selectList(sql, param);
+		   }
 
 	public Map<String, Object> myCom(List<Object> myCom) {
 		String sql = " SELECT * FROM COMPANY WHERE COM_NO = ?";
